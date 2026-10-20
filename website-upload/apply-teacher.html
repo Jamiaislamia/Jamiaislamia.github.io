@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="bn" data-theme="dusk" data-lang="bi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>শিক্ষক আবেদন · Teacher Application — জামিয়া ইসলামিয়া মাদরাসা</title>
+<meta name="description" content="জামিয়া ইসলামিয়া মাদরাসায় শিক্ষক পদে অনলাইন আবেদন — শিক্ষাগত যোগ্যতা, ধর্মীয় শিক্ষা, অভিজ্ঞতা ও বিষয় নির্বাচন করে জমা দিন।">
+<link rel="icon" href="assets/img/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<meta name="theme-color" content="#090d12">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter+Tight:wght@500;600;700&family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
+<script src="assets/js/prefs.js"></script>
+</head>
+<body>
+
+<header class="site-header" id="siteHeader"></header>
+
+<div class="wrap">
+  <a class="back-link" href="index.html">← হোম · Home</a>
+
+  <div class="page-head">
+    <div class="eyebrow" lang="en">ADMISSION · TEACHER</div>
+    <h1>শিক্ষক আবেদন</h1>
+    <p>যোগ্যতা, অভিজ্ঞতা এবং কোন বিষয়গুলো পড়াতে চান তা জানিয়ে আবেদন করুন। জমা দেওয়ার সাথে সাথেই একটি আবেদন আইডি পাবেন।</p>
+    <p class="sec-en" lang="en">Tell us your qualifications, experience and preferred subjects.</p>
+  </div>
+
+  <form id="tchForm" novalidate>
+    <article class="card" style="margin-bottom:22px">
+      <div class="card-pad">
+
+        <!-- 1 · Personal -->
+        <div class="form-sec">
+          <div class="form-sec-title">০১ · ব্যক্তিগত তথ্য · Personal information</div>
+          <div class="fgrid">
+            <div>
+              <label for="t-nameBn">নাম (বাংলা)</label>
+              <input id="t-nameBn" type="text" autocomplete="off">
+              <div class="fm"></div>
+            </div>
+            <div>
+              <label for="t-nameEn">Name (English)<span class="req">*</span></label>
+              <input id="t-nameEn" type="text" autocomplete="off">
+              <div class="fm"></div>
+            </div>
+            <div>
+              <label for="t-gen">লিঙ্গ · Gender<span class="req">*</span></label>
+              <select id="t-gen">
+                <option value="">— নির্বাচন করুন —</option>
+                <option value="Male">পুরুষ · Male</option>
+                <option value="Female">মহিলা · Female</option>
+              </select>
+              <div class="fm"></div>
+            </div>
+            <div>
+              <label for="t-dob">জন্ম তারিখ · Date of birth</label>
+              <input id="t-dob" type="date">
+              <div class="fm"></div>
+            </div>
+            <div>
+              <label for="t-rel">ধর্ম · Religion</label>
+              <input id="t-rel" type="text" value="ইসলাম · Islam">
+              <div class="fm"></div>
+            </div>
+            <div>
+              <label for="t-nat">জাতীয়তা · Nationality</label>
+              <input id="t-nat" type="text" value="বাংলাদেশি · Bangladeshi">
+              <div class="fm"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2 · Contact -->
+        <div class="form-sec">
+          <div class="form-sec-title">০২ · যোগাযোগ · Contact</div>
+          <div class="fgrid">
+            <div>
+              <label for="t-ph">মোবাইল · Mobile<span class="req">*</span></label>
+              <input id="t-ph" type="tel" inputmode="numeric" placeholder="01XXXXXXXXX" autocomplete="off">
+              <div class="fm"></div>
+            </div>
+            <div>
+              <label for="t-em">ইমেইল · Email</label>
+              <input id="t-em" type="email" placeholder="example@email.com" autocomplete="off">
+              <div class="fm"></div>
+            </div>
+            <div>
+              <label for="t-guardian">পিতা/অভিভাবকের নাম · Guardian name</label>
+              <input id="t-guardian" type="text" autocomplete="off">
+              <div class="fm"></div>
+            </div>
+            <div>
+              <label for="t-gph">অভিভাবকের মোবাইল · Guardian phone</label>
+              <input id="t-gph" type="tel" inputmode="numeric" placeholder="01XXXXXXXXX" autocomplete="off">
+              <div class="fm"></div>
+            </div>
+            <div class="f-full">
+              <label for="t-addr">ঠিকানা · Address<span class="req">*</span></label>
+              <textarea id="t-addr" placeholder="গ্রাম/মহল্লা, ডাকঘর, উপজেলা, জেলা"></textarea>
+              <div class="fm"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3 · Qualification -->
+        <div class="form-sec">
+          <div class="form-sec-title">০৩ · শিক্ষাগত যোগ্যতা · Qualification</div>
+          <div class="fgrid">
+            <div>
+              <label for="t-degree">সর্বোচ্চ শিক্ষাগত যোগ্যতা · Highest degree<span class="req">*</span></label>
+              <select id="t-degree">
+                <option value="">— নির্বাচন করুন —</option>
+                <option value="Hafiz">হাফিজ · Hafiz</option>
+                <option value="Alim">আলিম · Alim</option>
+                <option value="Fazil">ফাজিল · Fazil</option>
+                <option value="Kamil">কামিল · Kamil</option>
+                <option value="Graduate (BA/BSc)">স্নাতক · Graduate (BA/BSc)</option>
+                <option value="Post-graduate (MA/MSc)">স্নাতকোত্তর · Post-graduate (MA/MSc)</option>
+                <option value="B.Ed / M.Ed">বি.এড / এম.এড · B.Ed / M.Ed</option>
+                <option value="Other">অন্যান্য · Other</option>
+              </select>
+              <div class="fm"></div>
+            </div>
+            <div>
+              <label for="t-institute">প্রতিষ্ঠানের নাম · Institution</label>
+              <input id="t-institute" type="text" autocomplete="off">
+              <div class="fm"></div>
+            </div>
+            <div>
+              <label for="t-year">পাসের সন · Passing year</label>
+              <input id="t-year" type="text" placeholder="যেমন: 2024" inputmode="numeric" autocomplete="off">
+              <div class="fm"></div>
+            </div>
+            <div>
+              <label for="t-grade">ফলাফল · Result / GPA</label>
+              <input id="t-grade" type="text" placeholder="যেমন: GPA 4.75 / প্রথম শ্রেণি" autocomplete="off">
+              <div class="fm"></div>
+            </div>
+            <div>
+              <label for="t-hafiz">কুরআন হিফজ · Quran memorization</label>
+              <select id="t-hafiz">
+                <option value="">— নির্বাচন করুন —</option>
+                <option value="Hafiz (complete)">হাফিজ (সম্পূর্ণ)</option>
+                <option value="Partial">আংশিক · Partial</option>
+                <option value="Not applicable">প্রযোজ্য নয় · Not applicable</option>
+              </select>
+              <div class="fm"></div>
+            </div>
+            <div>
+              <label for="t-islamicQual">ধর্মীয় শিক্ষা/সনদ · Islamic education</label>
+              <input id="t-islamicQual" type="text" placeholder="যেমন: দাওরা, তাকমিল, ইফতা" autocomplete="off">
+              <div class="fm"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 · Subjects -->
+        <div class="form-sec">
+          <div class="form-sec-title">০৪ · যে বিষয়গুলো পড়াতে চান · Subjects to teach</div>
+          <div class="chips" id="t-subjects">
+            <label class="chip"><input type="checkbox" name="t-subj" value="Quran"><span>কুরআন · Quran</span></label>
+            <label class="chip"><input type="checkbox" name="t-subj" value="Hifzul Quran"><span>হিফজুল কুরআন · Hifzul Quran</span></label>
+            <label class="chip"><input type="checkbox" name="t-subj" value="Hadith"><span>হাদিস · Hadith</span></label>
+            <label class="chip"><input type="checkbox" name="t-subj" value="Fiqh"><span>ফিকহ · Fiqh</span></label>
+            <label class="chip"><input type="checkbox" name="t-subj" value="Aqidah"><span>আকিদাহ · Aqidah</span></label>
+            <label class="chip"><input type="checkbox" name="t-subj" value="Arabic"><span>আরবি · Arabic</span></label>
+            <label class="chip"><input type="checkbox" name="t-subj" value="Bangla"><span>বাংলা · Bangla</span></label>
+            <label class="chip"><input type="checkbox" name="t-subj" value="English"><span>ইংরেজি · English</span></label>
+            <label class="chip"><input type="checkbox" name="t-subj" value="Mathematics"><span>গণিত · Mathematics</span></label>
+            <label class="chip"><input type="checkbox" name="t-subj" value="Science"><span>বিজ্ঞান · Science</span></label>
+            <label class="chip"><input type="checkbox" name="t-subj" value="Sociology"><span>সমাজবিজ্ঞান · Sociology</span></label>
+            <label class="chip"><input type="checkbox" name="t-subj" value="Geography"><span>ভূগোল · Geography</span></label>
+            <label class="chip"><input type="checkbox" name="t-subj" value="History"><span>ইতিহাস · History</span></label>
+            <label class="chip"><input type="checkbox" name="t-subj" value="ICT"><span>তথ্যপ্রযুক্তি · ICT</span></label>
+          </div>
+          <div class="fm" id="t-subjErr"></div>
+        </div>
+
+        <!-- 5 · Experience -->
+        <div class="form-sec">
+          <div class="form-sec-title">০৫ · অভিজ্ঞতা · Experience</div>
+          <div class="fgrid">
+            <div>
+              <label for="t-exp">মোট অভিজ্ঞতা (বছর) · Experience (years)</label>
+              <input id="t-exp" type="text" inputmode="numeric" placeholder="যেমন: 3" autocomplete="off">
+              <div class="fm"></div>
+            </div>
+            <div>
+              <label for="t-workplace">বর্তমান/সর্বশেষ কর্মস্থল · Current / last workplace</label>
+              <input id="t-workplace" type="text" autocomplete="off">
+              <div class="fm"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6 · Preference -->
+        <div class="form-sec">
+          <div class="form-sec-title">০৬ · পদপছন্দ · Position preference</div>
+          <div class="chips">
+            <label class="chip"><input type="checkbox" name="t-role" value="Full-time"><span>পূর্ণকালীন · Full-time</span></label>
+            <label class="chip"><input type="checkbox" name="t-role" value="Part-time"><span>খণ্ডকালীন · Part-time</span></label>
+            <label class="chip"><input type="checkbox" name="t-role" value="Halaqa / Quran teacher"><span>হালাকা / কুরআন শিক্ষক</span></label>
+            <label class="chip"><input type="checkbox" name="t-role" value="Substitute"><span>বিকল্প · Substitute</span></label>
+          </div>
+        </div>
+
+        <!-- 7 · Photo -->
+        <div class="form-sec">
+          <div class="form-sec-title">০৭ · ছবি · Photo</div>
+          <div class="photo-row">
+            <div class="photo-box" id="t-photoBox" role="button" tabindex="0" aria-label="ছবি আপলোড করুন">
+              <span class="ph-hint" id="t-photoHint">ছবি<br>যোগ করুন</span>
+            </div>
+            <div style="flex:1;min-width:180px">
+              <input id="t-photo" type="file" accept="image/*" style="display:none">
+              <div style="font-size:11px;color:var(--muted);line-height:1.9">
+                পাসপোর্ট সাইজ ছবি (স্বয়ংক্রিয়ভাবে সংকুচিত হবে)।
+                <div style="color:var(--muted2);font-size:10px">JPG/PNG · সর্বোচ্চ ১৮০KB সংরক্ষিত হবে</div>
+              </div>
+              <div class="fm" id="t-photoMsg"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 8 · Notes -->
+        <div class="form-sec">
+          <div class="form-sec-title">০৮ · অতিরিক্ত তথ্য · Additional notes</div>
+          <div class="fgrid">
+            <div class="f-full">
+              <label for="t-note">অতিরিক্ত তথ্য (ঐচ্ছিক)</label>
+              <textarea id="t-note" placeholder="নিজের সম্পর্কে সংক্ষেপে লিখুন"></textarea>
+              <div class="fm"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn btn-primary" id="t-submit" type="submit">আবেদন জমা দিন · Submit →</button>
+          <button class="btn" id="t-reset" type="reset">মুছে ফেলুন · Clear</button>
+        </div>
+        <div class="fm" id="t-globalErr" style="margin-top:10px"></div>
+      </div>
+    </article>
+  </form>
+
+  <div id="t-success" style="display:none">
+    <article class="card" style="margin-bottom:22px"><div class="card-pad">
+      <div class="panel panel-ok">
+        <div class="panel-title">✅ আবেদন সফলভাবে জমা হয়েছে · Application submitted</div>
+        <p>আপনার শিক্ষক আবেদন কর্তৃপক্ষের কাছে পৌঁছে গেছে। যোগ্যতা যাচাই করে যোগাযোগ করা হবে, ইনশাআল্লাহ।<br>
+        <span style="color:var(--muted)">Your teaching application has reached the school authority. They will contact you after review.</span></p>
+      </div>
+      <div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:4px">আপনার আবেদন আইডি · Your Application ID</div>
+      <div class="app-id" id="t-appId" data-copy="">TCH-XXXXXXXX</div>
+      <div class="fm" id="t-offlineNote" style="color:var(--amber)"></div>
+      <div class="form-actions" style="margin-top:16px">
+        <button class="btn btn-primary" type="button" id="t-retryBtn" style="display:none">আবার জমা দিন · Retry submit</button>
+        <button class="btn" type="button" id="t-copyBtn">আইডি কপি করুন</button>
+        <button class="btn" type="button" id="t-againBtn">নতুন আবেদন</button>
+      </div>
+    </div></article>
+  </div>
+
+  <!-- ══════════ STATUS CHECK (student + teacher) ══════════ -->
+  <section class="section" id="check" style="padding-top:8px">
+    <div class="sec-head">
+      <span class="eyebrow" lang="en">STATUS</span>
+      <h2 class="sec-title">আবেদনের অবস্থা যাচাই</h2>
+      <span class="sec-rule"></span>
+    </div>
+    <article class="card"><div class="card-pad">
+      <div class="apply-track" data-apply-track>
+        <div class="fgrid">
+          <div>
+            <label for="t-checkId">আবেদন আইডি · Application ID</label>
+            <input id="t-checkId" type="text" placeholder="TCH-XXXXXXXX / APP-XXXXXXXX" autocomplete="off" spellcheck="false">
+          </div>
+          <div style="display:flex;align-items:flex-end">
+            <button class="btn btn-primary" type="button">যাচাই করুন · Check</button>
+          </div>
+        </div>
+        <div data-track-result aria-live="polite"></div>
+        <p class="hint">শিক্ষক (TCH-…) ও শিক্ষার্থী (APP-…) — দুই ধরনের আবেদনই যাচাই করা যায়।</p>
+      </div>
+    </div></article>
+  </section>
+</div>
+
+<footer class="site-footer" id="siteFooter"></footer>
+
+<script src="assets/js/firebase-rt.js"></script>
+<script src="assets/js/site-links.js"></script>
+<script src="assets/js/social-icons.js"></script>
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/site.js"></script>
+<script src="assets/js/apply-teacher.js"></script>
+<script src="assets/js/apply-track.js"></script>
+</body>
+</html>

@@ -1,0 +1,947 @@
+/* ═══════════════════════════════════════════════════════════════
+   JAMIA ISLAMIA MADRASAH — PUBLIC WEBSITE STYLESHEET
+   ONE THEME, DAY AND NIGHT — "Madrasah Dusk"
+   Teal (the single screen accent) + gold (the heritage layer) on
+   blue-black. There is no theme switch and no language switch: the
+   palette is fixed — high-contrast enough for midday sun, calm enough
+   for a night screen — and every label renders Bangla · English.
+   Tokens & grading: website/PLAN.md §3–4
+   ═══════════════════════════════════════════════════════════════ */
+
+:root{
+  color-scheme:dark;
+  /* ── surfaces — blue-black, never pure black (legible in daylight) ── */
+  --bg:#090d12;          /* page */
+  --surface:#0f151c;     /* cards, header, footer */
+  --surface2:#151e28;    /* subtle fills, hover */
+  --field:#0b1118;       /* inputs sit a step darker than the card */
+  --border:#1d2835;      /* hairline */
+  --border2:#2a3a4c;     /* emphasized */
+  --glass:rgba(9,13,18,.82);
+  /* ── ink ── */
+  --text:#eaf1f6;        /* ≈15.5:1 on cards */
+  --body:#bfcedd;        /* ≈11:1 */
+  --nav:#c3d4e2;
+  --muted:#8ca1b3;       /* ≈6.5:1 */
+  --muted2:#5b7080;      /* ≈3.6:1 — micro-labels only */
+  /* ── accent — teal, the one screen accent ── */
+  --accent:#46c2ac;
+  --accent-d:#6fdcc8;    /* hover / brighter on dark */
+  --accent-ink:#052a24;  /* ink on a filled teal control */
+  --accent-t:rgba(70,194,172,.12);
+  --accent-edge:rgba(70,194,172,.32);
+  --accent-ring:rgba(70,194,172,.24);
+  --accent-glow:rgba(70,194,172,.32);
+  /* ── gold — the heritage layer (eyebrows, rules, stepper, year chips) ── */
+  --gold:#d8b45e;
+  --gold-bright:#edcf8f;
+  --gold-deep:#a9873d;
+  --gold-t:rgba(216,180,94,.10);
+  --gold-edge:rgba(216,180,94,.30);
+  /* ── semantic status (only ever on status tags / messages) ── */
+  --teal:#4fd6a5;    --teal-bg:rgba(79,214,165,.10);    --teal-edge:rgba(79,214,165,.30);
+  --amber:#f2be5c;   --amber-bg:rgba(242,190,92,.10);   --amber-edge:rgba(242,190,92,.30);
+  --crimson:#f0645c; --crimson-bg:rgba(240,100,92,.10); --crimson-edge:rgba(240,100,92,.30);
+  /* ── shape — boxy: softly squared cards, 4px controls ── */
+  --r-card:6px; --r-btn:4px; --r-input:4px; --r-tag:3px; --r-chip:10px;
+  /* ── elevation — borders first; shadows only for lift / modals ── */
+  --sh-1:0 1px 0 rgba(0,0,0,.35);
+  --sh-2:0 18px 44px -20px rgba(0,0,0,.9);
+  /* ── motion ── */
+  --ease:cubic-bezier(.22,1,.36,1);
+  --ease-soft:cubic-bezier(.16,1,.3,1);
+  /* ── ambient ── */
+  --hero-top:#0d1620;
+  --glow:rgba(70,194,172,.08);
+  /* ── type (unchanged) ── */
+  --font-head:'Inter Tight','Hind Siliguri',system-ui,-apple-system,sans-serif;
+  --font-body:'Inter','Hind Siliguri',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-mono:'DM Mono','Hind Siliguri',ui-monospace,monospace;
+  /* Arabic masthead only — Amiri is the classic Naskh book face: its marks sit
+     correctly at UI sizes, where more display-oriented Arabic faces crowd.
+     Falls back to another Naskh serif, never to tofu or a Latin face. */
+  --font-ar:'Amiri','Scheherazade New','Noto Naskh Arabic','Traditional Arabic',serif;
+}
+
+/* ── Heading face ─────────────────────────────────────
+   English headings use Inter Tight (a professional, headline-optimised
+   sans) at 600; Bangla headings fall through to Hind Siliguri. */
+.brand-name,.sec-title,.hero h1,.subj-name,.step-title,.apply-title,.value-title,
+.fact-v:not(.empty),.stepper-title,.page-head h1{
+  font-weight:600; letter-spacing:-.01em;
+}
+
+/* ── Islamic identity — an eight-point girih lattice, drawn in CSS ──
+   Two squares rotated 45° over each other, hairline gold at 10 %. Pure
+   data-URI so the page still ships with no build step and no new asset. */
+:root{
+  --girih:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 72 72'%3E%3Cg fill='none' stroke='%23d8b45e' stroke-opacity='.13' stroke-width='1'%3E%3Crect x='17' y='17' width='38' height='38'/%3E%3Crect x='17' y='17' width='38' height='38' transform='rotate(45 36 36)'/%3E%3Crect x='27' y='27' width='18' height='18'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* ── Language law — ONE SLOT = ONE LANGUAGE ──
+   English is the labelling/orientation layer: eyebrows, micro-labels,
+   chips, buttons and ONE orientation line per section (`.sec-en`). Bangla
+   carries all body prose — the same sentence is never repeated in the
+   other language. `.bi-en` only decorates English fragments that JS
+   appends beside a Bangla label (status chips, timeline chips). */
+.bi-en{
+  font-family:inherit; font-size:.86em; font-weight:400;
+  letter-spacing:inherit; text-transform:inherit; color:var(--muted);
+}
+.bi-en::before{content:" · "; color:var(--muted2)}
+.bi-en.is-block{
+  display:block; margin-top:5px; font-size:.6em; font-weight:400;
+  letter-spacing:0; line-height:1.55; color:var(--muted2);
+}
+.bi-en.is-block::before{content:""}
+
+/* The section's single English orientation line (never a translation). */
+.sec-en{
+  margin:0 0 26px; max-width:82ch;
+  font-family:var(--font-mono); font-size:11px; line-height:1.75;
+  letter-spacing:.03em; color:var(--muted2);
+}
+.sec-sub + .sec-en{margin-top:-18px}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg); color:var(--text);
+  font-family:var(--font-body); font-size:15px; line-height:1.75;
+  min-height:100vh; -webkit-font-smoothing:antialiased;
+}
+a{color:var(--accent-d); text-decoration:none; transition:color .18s}
+a:hover{color:var(--text)}
+img{display:block; max-width:100%}
+code{font-family:var(--font-mono); font-size:.9em; background:var(--surface2); padding:1px 6px; border-radius:4px}
+::selection{background:var(--accent-ring)}
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:4px}
+
+/* ── Header ─────────────────────────────────────────── */
+.site-header{
+  position:sticky; top:0; z-index:100;
+  background:var(--glass); backdrop-filter:blur(14px) saturate(130%);
+  border-bottom:1px solid var(--border);
+}
+.header-in{
+  max-width:1200px; margin:0 auto; padding:12px 24px;
+  display:flex; align-items:center; gap:20px;
+}
+.brand{display:flex; align-items:center; gap:12px; min-width:0; flex-shrink:0}
+.brand img{
+  height:34px; width:auto; max-width:42px; object-fit:contain; flex-shrink:0;
+  background:var(--surface2); border:1px solid var(--gold-edge); border-radius:6px; padding:3px;
+}
+.brand-name{font-family:var(--font-head); font-size:17px; color:var(--text); white-space:nowrap; line-height:1.2}
+.brand-sub{display:block; font-family:var(--font-mono); font-size:8.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted2); margin-top:3px}
+.nav{margin-left:auto; display:flex; align-items:center; gap:2px}
+.nav a{
+  font-size:14px; line-height:1.35; color:var(--nav); padding:9px 12px; border-radius:var(--r-btn);
+  transition:color .18s, background .18s;
+}
+.nav a:hover{color:var(--text); background:var(--surface2)}
+.nav a.active{color:var(--accent-d); background:var(--accent-t); font-weight:500}
+.menu-btn{
+  display:none; margin-left:0; background:var(--surface); border:1px solid var(--border2);
+  color:var(--text); border-radius:var(--r-btn); padding:9px 13px; cursor:pointer;
+  font-family:var(--font-mono); font-size:12px;
+}
+
+@media (max-width:1360px){
+  .nav a{padding-left:8px; padding-right:8px}
+}
+
+/* ── Header apply button — the one action in the bar ──
+   One 34px box, the same height as the logo and the nav rows, so the header
+   never grows a second baseline. Resting state is a tinted ghost (borders
+   first, no bloom); the solid accent fill arrives on hover and on keyboard
+   focus, which keeps the single-accent law without parking a bright mint
+   block in an otherwise quiet bar. */
+.apply-wrap{position:relative; margin-left:2px; flex-shrink:0}
+.apply-btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:7px;
+  height:34px; padding:0 15px; white-space:nowrap;
+  font-family:var(--font-mono); font-size:12px; font-weight:500; letter-spacing:.06em;
+  line-height:1; text-transform:uppercase; text-decoration:none;
+  border-radius:var(--r-btn); cursor:pointer;
+  background:var(--accent-t); border:1px solid var(--accent-edge); color:var(--accent-d);
+  box-shadow:none;
+  transition:background .18s, border-color .18s, color .18s;
+}
+.apply-btn:hover,.apply-btn:focus-visible{background:var(--accent); border-color:var(--accent); color:var(--accent-ink)}
+.apply-btn:active{transform:translateY(1px)}
+.apply-caret{font-size:10.5px; opacity:.95; transition:transform .2s var(--ease)}
+.apply-btn-en{font-size:9.5px; letter-spacing:.08em; text-transform:none; opacity:.8}
+.apply-btn:hover .apply-btn-en,.apply-btn:focus-visible .apply-btn-en{opacity:.95}
+.apply-btn:hover .apply-caret{transform:translateX(2px)}
+
+/* Centred action row (Find us / Explore) */
+.locate-row{display:flex; justify-content:center; gap:12px; flex-wrap:wrap; margin-top:22px}
+.btn-lg{padding:15px 30px; font-size:13px}
+
+/* ── Merged "Apply & Track" block ───────────────────── */
+/* process steps inside the card — plain rows, never nested cards */
+.steps-row{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:0;
+  padding-bottom:22px; margin-bottom:22px; border-bottom:1px solid var(--border);
+}
+.step-block{padding:0 22px}
+.step-block:first-child{padding-left:0}
+.step-block:last-child{padding-right:0}
+.step-block + .step-block{border-left:1px solid var(--border)}
+.steps-row .step-title{font-size:17px; margin-bottom:4px}
+.steps-row .step-desc{font-size:12.5px; line-height:1.72}
+.steps-row .step-num{margin-bottom:6px}
+.steps-row--solo{padding-bottom:0; margin-bottom:0; border-bottom:0}
+/* the Hifz stages inside the Hifzul Quran stream card — plain columns, never nested cards */
+.steps-row--in-card{border-top:1px solid var(--border); padding-top:22px; padding-bottom:0; margin-bottom:0}
+
+/* a card that spans the whole grid row (e.g. the Hifzul Quran stream) */
+.card--wide{grid-column:1/-1}
+.card--wide .apply-desc{max-width:82ch}
+
+.apply-rows{display:flex; flex-direction:column}
+.apply-row{
+  display:flex; align-items:center; justify-content:space-between; gap:24px;
+  padding:22px 0; border-bottom:1px solid var(--border); flex-wrap:wrap;
+}
+.apply-row:first-child{padding-top:2px}
+.apply-row-main{flex:1 1 320px; min-width:0}
+.apply-row .btn{flex-shrink:0}
+.apply-track{margin-top:24px}
+.apply-track .hint{font-size:12px; color:var(--muted2); margin-top:10px}
+.apply-track [data-track-result]:empty{display:none}
+.apply-track [data-track-result] .panel{margin:16px 0 0}
+
+/* ── Layout ─────────────────────────────────────────── */
+.wrap{max-width:1080px; margin:0 auto; padding:0 24px}
+.section{padding:72px 0 8px; scroll-margin-top:80px}
+.sec-head{display:flex; align-items:center; gap:16px; margin-bottom:26px}
+.eyebrow{
+  font-family:var(--font-mono); font-size:10.5px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--gold); background:var(--gold-t); border:1px solid var(--gold-edge);
+  padding:6px 14px; border-radius:var(--r-tag); white-space:nowrap;
+}
+.eyebrow .bi-en{color:var(--gold-deep); font-size:.94em; font-weight:inherit; letter-spacing:inherit}
+.eyebrow .bi-en::before{color:var(--gold-deep)}
+.sec-title{font-family:var(--font-head); font-size:28px; color:var(--text); white-space:nowrap}
+.sec-rule{flex:1; height:1px; background:linear-gradient(90deg,var(--gold-edge),var(--border) 42%,transparent); min-width:24px; position:relative}
+.sec-rule::before{content:""; position:absolute; left:0; top:-2px; width:6px; height:6px; background:var(--gold); transform:rotate(45deg); opacity:.85}
+.sec-sub{color:var(--muted); font-size:14px; line-height:1.9; margin:-16px 0 26px; max-width:78ch}
+
+/* ── Hero ───────────────────────────────────────────── */
+.hero{
+  position:relative; overflow:hidden; border-bottom:1px solid var(--border);
+  /* Ambient glow: the accent at 8 % twice — a wide wash behind the title and a
+     soft off-centre bloom — over the theme's gradient start. Token-driven, so
+     both themes get the same treatment at the same (legal) intensity. */
+  background:
+    radial-gradient(1100px 420px at 50% -20%, var(--glow), transparent 72%),
+    radial-gradient(620px 300px at 12% 4%, var(--glow), transparent 70%),
+    linear-gradient(180deg, var(--hero-top) 0%, var(--bg) 100%);
+}
+.hero::before{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background-image:var(--girih); background-size:72px 72px;
+  -webkit-mask-image:radial-gradient(120% 90% at 50% 0%, #000 0%, transparent 72%);
+  mask-image:radial-gradient(120% 90% at 50% 0%, #000 0%, transparent 72%);
+}
+/* ── Hero masthead — the Basmala ─────────────────────
+   One gold line above the identity, sized as a seal (25px, 20px on phones) and
+   never as a second headline (the H1 is 52px). Set in Amiri — the Naskh book
+   face whose marks sit correctly at UI sizes — in the same gold as the section
+   eyebrows and the stepper, with two hairlines that fade outward into the girih.
+   Decorative for assistive tech: the logo alt and the H1 already state the same
+   identity, so it must not detour a screen reader into Arabic. */
+.hero-basmala{
+  display:flex; align-items:center; justify-content:center; gap:18px;
+  max-width:460px; margin:0 auto 26px;
+  font-family:var(--font-ar); font-size:25px; line-height:1.85;
+  letter-spacing:0; color:var(--gold-bright); opacity:.95;
+}
+.hero-basmala span{display:block; white-space:nowrap}
+.hero-basmala::before,.hero-basmala::after{
+  content:""; flex:1 1 32px; height:1px; min-width:28px;
+}
+.hero-basmala::before{background:linear-gradient(to right, var(--gold-edge), transparent)}
+.hero-basmala::after{background:linear-gradient(to left, var(--gold-edge), transparent)}
+
+.hero-in{position:relative; text-align:center; padding:62px 24px 68px; max-width:800px; margin:0 auto}
+.hero-logo{
+  height:132px; width:auto; max-width:60%; margin:0 auto 26px; object-fit:contain;
+  background:var(--surface2); border:1px solid var(--gold-edge); border-radius:6px;
+  padding:12px; box-shadow:var(--sh-1);
+}
+.hero h1{font-family:var(--font-head); font-size:52px; line-height:1.14; color:var(--text); margin-bottom:12px}
+.hero h1 .bi-en{margin-top:6px}
+/* Hero slogan — English, set in the headline face (Inter Tight 600) so it reads
+   as a motto under the name rather than as body copy. Latin caps sit smaller
+   than Bangla at the same size, hence 17px against the old 16px. */
+.hero-tag{
+  font-family:var(--font-head); font-size:17px; font-weight:600;
+  letter-spacing:.012em; color:var(--accent-d); margin-bottom:16px;
+}
+.hero p{color:var(--body); font-size:15.5px; line-height:1.95; max-width:640px; margin:0 auto 26px}
+.hero p .bi-en{display:block; margin-top:10px; padding-top:10px; border-top:1px solid var(--gold-edge); font-size:12.5px; line-height:1.85; color:var(--muted)}
+.hero p .bi-en::before{content:""}
+.hero-note{
+  font-family:var(--font-mono); margin-top:20px; font-size:10.5px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--muted2);
+}
+.hero-note .bi-en{display:block; margin-top:5px; font-size:9.5px; letter-spacing:.12em; color:var(--muted2); opacity:.85}
+.hero-note .bi-en::before{content:""}
+
+/* ── Buttons ────────────────────────────────────────── */
+.btn{
+  display:inline-flex; align-items:center; gap:9px;
+  font-family:var(--font-mono); font-size:13px; font-weight:500; letter-spacing:.08em; text-transform:uppercase;
+  padding:13px 22px; border-radius:var(--r-btn); cursor:pointer;
+  background:var(--surface); border:1px solid var(--border2); color:var(--text);
+  box-shadow:none;
+  transition:background .18s, border-color .18s, color .18s, transform .18s;
+}
+.btn:hover{border-color:var(--accent); color:var(--accent-d); background:var(--accent-t)}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--accent); border-color:var(--accent); color:var(--accent-ink); font-weight:500; box-shadow:0 12px 26px -16px var(--accent-glow)}
+.btn-primary:hover{background:var(--accent-d); border-color:var(--accent-d); color:var(--accent-ink)}
+.btn-sm{padding:9px 16px; font-size:11.5px}
+.btn[disabled]{opacity:.55; cursor:not-allowed}
+
+/* ── Cards ────────────────────────────────────────────
+   Hover law (blueprint Part 4.7 + the C1 state row): grid cards lift 5px, the
+   hairline turns accent, the signature accent bar runs from its 40px stub to
+   full width and an 8 % accent bloom fades in — all on the card easing.
+   Buttons only recolour; list rows only change background. */
+.card{
+  position:relative; background:var(--surface);
+  border:1px solid var(--border); border-radius:var(--r-card);
+  overflow:hidden; box-shadow:var(--sh-1);
+  transition:transform 380ms var(--ease), box-shadow 380ms var(--ease), border-color 380ms var(--ease);
+}
+.card::before{
+  content:""; position:absolute; top:0; left:0; height:3px; width:40px;
+  background:var(--accent); z-index:2;
+  transition:width 400ms var(--ease);
+}
+.card::after{
+  content:""; position:absolute; inset:0; pointer-events:none; opacity:0;
+  background:radial-gradient(ellipse at 0% 0%, var(--glow), transparent 70%);
+  transition:opacity 300ms var(--ease);
+}
+.card-pad{position:relative; z-index:1; padding:22px}
+.card:hover{transform:translateY(-5px); box-shadow:var(--sh-2); border-color:var(--accent)}
+.card:hover::before{width:100%}
+.card:hover::after{opacity:1}
+
+/* ── Streams — FOUR equal cards (owner request: 2 live + 2 upcoming, each a
+   card of its own instead of one feature beside a merged 3-row panel).
+   Every card is a flex column, so the footer rule lands at the same height
+   in all four and the subject chips absorb the spare space — that is what
+   removes the dead band the stretched feature card used to show. */
+.stream-grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); grid-auto-rows:1fr; gap:16px}
+.stream-card{display:flex}
+.stream-card .card-pad{flex:1; display:flex; flex-direction:column; padding:22px}
+.stream-head{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px}
+.stream-title{
+  font-family:var(--font-head); font-weight:600; font-size:21px; line-height:1.3;
+  color:var(--text); margin-bottom:8px;
+}
+.stream-title span{
+  display:block; margin-top:4px;
+  font-family:var(--font-mono); font-size:10px; font-weight:400;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--muted2);
+}
+.stream-desc{font-size:13px; color:var(--muted); line-height:1.8; margin-bottom:16px; max-width:44ch}
+.stream-chips{list-style:none; display:flex; flex-wrap:wrap; gap:6px; margin-bottom:18px}
+.stream-chips li{
+  font-family:var(--font-mono); font-size:10px; letter-spacing:.06em; color:var(--muted);
+  background:var(--surface2); border:1px solid var(--border); border-radius:4px; padding:4px 8px;
+}
+.stream-chip-more{color:var(--muted2); background:transparent; border-style:dashed}
+.stream-foot{
+  margin-top:auto; padding-top:14px; border-top:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+}
+.stream-meta{
+  font-family:var(--font-mono); font-size:9.5px; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--muted2);
+  min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.stream-card.is-soon .stream-title{color:var(--muted)}
+.stream-card.is-soon .stream-desc{color:var(--muted2)}
+.stream-card.is-soon .stream-chips li{opacity:.85}
+
+/* ── Aspect sheet (Culture): six short items as one card of hairline cells
+   instead of six identical cards — keeps one card per section (C15). */
+.aspects{position:relative; z-index:1; display:grid; grid-template-columns:repeat(2,1fr)}
+.aspect{padding:22px; border-top:1px solid var(--border); transition:background 150ms var(--ease)}
+.aspect:nth-child(2n){border-left:1px solid var(--border)}
+.aspect:nth-child(-n+2){border-top:0}
+.aspect:hover{background:var(--surface2)}
+
+/* ── Grids ──────────────────────────────────────────── */
+.grid{display:grid; gap:16px}
+/* Fixed 3-up card grids: the browser always makes exactly three tracks, so a row
+   is either full or the last row simply has fewer cards — never a half-empty
+   trailing track (which is what auto-fit/auto-fill produced). 2-up ≤760px,
+   stacked ≤560px. */
+.grid-streams{grid-template-columns:repeat(3,1fr)}
+.grid-values{grid-template-columns:repeat(3,1fr)}
+
+/* Subject / step cards */
+.subj-name{font-family:var(--font-head); font-size:20px; color:var(--text); margin-bottom:3px}
+.subj-en{font-family:var(--font-mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--gold-deep); margin-bottom:9px}
+.step-num{font-family:var(--font-mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--accent-d); margin-bottom:10px}
+.step-title{font-family:var(--font-head); font-size:19px; margin-bottom:6px}
+.step-desc{font-size:13px; color:var(--muted); line-height:1.8}
+.step-desc .bi-en{display:block; margin-top:5px; font-size:12px; color:var(--muted2)}
+.step-desc .bi-en::before{content:""}
+.value-title .bi-en,.apply-title .bi-en,.step-title .bi-en,.tch-name .bi-en,.super-name .bi-en,.subj-name .bi-en{
+  display:block; margin-top:4px; font-size:.54em; font-weight:400;
+  letter-spacing:0; text-transform:none; color:var(--muted2); line-height:1.5;
+}
+.value-title .bi-en::before,.apply-title .bi-en::before,.step-title .bi-en::before,
+.tch-name .bi-en::before,.super-name .bi-en::before,.subj-name .bi-en::before{content:""}
+.value-desc .bi-en{display:block; margin-top:6px; font-size:11.5px; line-height:1.75; color:var(--muted2)}
+.value-desc .bi-en::before{content:""}
+
+/* Apply / division cards */
+.apply-card{text-align:left; display:flex; flex-direction:column; gap:14px}
+.apply-title{font-family:var(--font-head); font-size:23px; color:var(--text)}
+.apply-desc{font-size:13px; color:var(--muted); line-height:1.85; flex:1}
+
+/* Value / culture cards */
+.value-title{font-family:var(--font-head); font-size:19px; margin-bottom:6px}
+.value-desc{font-size:13px; color:var(--muted); line-height:1.85}
+
+/* ── Facts strip ────────────────────────────────────── */
+.facts{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px}
+.fact{background:var(--surface); border:1px solid var(--border); border-radius:var(--r-card); padding:18px 20px; box-shadow:var(--sh-1)}
+.fact-k{font-family:var(--font-mono); font-size:9.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--gold-deep); margin-bottom:8px}
+.fact-v{font-family:var(--font-head); font-size:20px; color:var(--text)}
+.fact-v.empty{
+  font-family:var(--font-mono); font-size:12px; color:var(--muted2);
+  border-bottom:1px dashed var(--border2); display:inline-block; padding-bottom:2px;
+}
+
+/* ── Narrative ──────────────────────────────────────── */
+.narrative p{font-size:14.5px; line-height:1.95; color:var(--body); margin-bottom:14px}
+.narrative p:last-child{margin-bottom:0}
+.narrative strong{color:var(--text); font-weight:600}
+
+/* ── Milestones — the HERITAGE STEPPER (no side rails) ─────────
+   The two ~200px asides are gone: filters and year jumps are chips in a
+   toolbar above the rail, so the section is ONE column and nothing is
+   squeezed into a narrow card. */
+.hist-toolbar{
+  display:flex; align-items:flex-start; justify-content:space-between;
+  gap:12px; flex-wrap:wrap; margin-bottom:12px;
+}
+.hist-filters{display:flex; flex-wrap:wrap; gap:6px}
+.hist-filter{
+  position:relative; display:inline-flex; align-items:center; gap:8px;
+  font-family:var(--font-mono); font-size:10px; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--muted); background:transparent; border:1px solid var(--border);
+  border-radius:4px; padding:6px 10px; cursor:pointer;
+  transition:background 150ms var(--ease), border-color 150ms var(--ease), color 150ms var(--ease);
+}
+.hist-filter b{font-weight:500; color:var(--muted2)}
+.hist-filter:hover{background:var(--surface2); color:var(--text)}
+.hist-filter[aria-pressed="true"]{background:var(--gold-t); border-color:var(--gold-edge); color:var(--gold)}
+.hist-filter[aria-pressed="true"] b{color:var(--gold)}
+.hist-more{
+  font-family:var(--font-mono); font-size:10px; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--gold); background:transparent; border:1px solid var(--gold-edge);
+  border-radius:4px; padding:6px 11px; cursor:pointer;
+  transition:background 150ms var(--ease), color 150ms var(--ease);
+}
+.hist-more:hover{background:var(--gold-t)}
+/* the year row replaces the old "on this page" card */
+.hist-years{
+  display:flex; flex-wrap:wrap; gap:6px; margin-bottom:20px; padding-bottom:16px;
+  border-bottom:1px solid var(--border);
+}
+.hist-years a{
+  font-family:var(--font-mono); font-size:10px; letter-spacing:.1em;
+  color:var(--muted2); text-decoration:none; padding:3px 8px;
+  border:1px solid transparent; border-radius:4px;
+  transition:color 150ms var(--ease), border-color 150ms var(--ease);
+}
+.hist-years a:hover{color:var(--gold); border-color:var(--gold-edge)}
+.hist-years a[aria-current="true"]{color:var(--gold); border-color:var(--gold-edge); background:var(--gold-t)}
+.hist-feed{max-width:880px}
+
+/* the stepper — rail + numbered nodes + one card per milestone */
+.stepper{position:relative; padding-left:44px}
+.stepper::before{
+  content:""; position:absolute; left:15px; top:18px; bottom:30px; width:1px;
+  background:linear-gradient(180deg,var(--gold-edge),var(--gold-edge) 18%,var(--border) 62%,transparent);
+}
+.stepper-step{position:relative; margin-bottom:14px}
+.stepper-step:last-of-type{margin-bottom:0}
+.stepper-node{
+  position:absolute; left:-44px; top:14px; z-index:2;
+  width:31px; height:31px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-mono); font-size:10.5px; letter-spacing:.04em;
+  color:var(--muted); background:var(--surface); border:1px solid var(--border2);
+  transition:border-color 380ms var(--ease), color 380ms var(--ease), background 380ms var(--ease);
+}
+.stepper-step:hover .stepper-node{border-color:var(--gold); color:var(--gold)}
+.stepper-step--now .stepper-node{
+  background:var(--gold); border-color:var(--gold); color:#1a1305;
+  box-shadow:0 0 0 4px var(--gold-t);
+}
+.stepper-body{padding:18px 20px}
+.stepper-meta{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:11px}
+.stepper-year{
+  font-family:var(--font-mono); font-size:11px; letter-spacing:.14em;
+  color:var(--accent-d); background:var(--surface2); border:1px solid var(--border2);
+  border-radius:var(--r-tag); padding:3px 9px;
+}
+.stepper-year em{font-style:normal; color:var(--muted2); margin-left:7px; letter-spacing:.08em}
+.stepper-chip{
+  font-family:var(--font-mono); font-size:9px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--gold); background:var(--gold-t); border:1px solid var(--gold-edge);
+  border-radius:var(--r-tag); padding:3px 9px;
+}
+.stepper-title{font-family:var(--font-head); font-size:18px; color:var(--text); line-height:1.35; margin-bottom:5px}
+/* the milestone's ONE English line — result-first, not a translation */
+.stepper-en{
+  font-family:var(--font-mono); font-size:11px; letter-spacing:.03em; line-height:1.7;
+  color:var(--muted2); margin-bottom:8px;
+}
+.stepper-desc{font-size:13px; color:var(--muted); line-height:1.78; max-width:72ch}
+.chain-item{scroll-margin-top:88px}
+.chain-item::before{background:var(--gold)}
+.stepper-step--now .chain-item{border-color:var(--gold-edge)}
+.chain-note{
+  font-family:var(--font-mono); margin-top:14px; margin-left:44px; padding-top:12px;
+  border-top:1px solid var(--border);
+  font-size:9.5px; letter-spacing:.09em; text-transform:uppercase; color:var(--muted2);
+}
+.chain-more{text-align:center; margin-left:44px; margin-top:14px}
+.chain-caret{font-size:9px; line-height:1; opacity:.9; transition:transform .18s var(--ease)}
+.chain-more .btn:hover .chain-caret{transform:translateY(1px)}
+
+/* ── Departments ────────────────────────────────────── */
+.depts{display:flex; flex-wrap:wrap; gap:9px; margin-bottom:20px}
+
+/* ── Tags ───────────────────────────────────────────── */
+.tag{
+  display:inline-block; font-family:var(--font-mono); font-size:10px; letter-spacing:.1em;
+  text-transform:uppercase; padding:5px 14px; border-radius:var(--r-tag);
+  border:1px solid var(--border2); color:var(--muted); background:var(--surface);
+}
+.tag-acc{color:var(--accent-d); border-color:var(--accent-edge); background:var(--accent-t)}
+.tag-pending{color:var(--amber); border-color:var(--amber-edge); background:var(--amber-bg)}
+.tag-approved{color:var(--teal); border-color:var(--teal-edge); background:var(--teal-bg)}
+.tag-declined{color:var(--crimson); border-color:var(--crimson-edge); background:var(--crimson-bg)}
+.tag-waitlisted{color:var(--amber); border-color:var(--amber-edge); background:var(--amber-bg)}
+
+/* ── Forms ──────────────────────────────────────────── */
+.form-sec{margin-bottom:28px}
+.form-sec:last-child{margin-bottom:0}
+.form-sec-title{
+  font-family:var(--font-mono); font-size:10.5px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--accent-d); padding-bottom:10px; margin-bottom:18px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; gap:10px;
+}
+.form-sec-title::after{content:""; flex:1; height:1px; background:var(--border)}
+.fgrid{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+.f-full{grid-column:1 / -1}
+label{display:block; font-size:12.5px; font-weight:500; color:var(--muted); margin-bottom:7px}
+label .req{color:var(--crimson); margin-left:2px}
+input,select,textarea{
+  width:100%; padding:12px 14px;
+  background:var(--field); border:1px solid var(--border2); border-radius:var(--r-input);
+  color:var(--text); font-family:var(--font-body); font-size:14.5px; outline:none;
+  transition:border-color .18s, box-shadow .18s;
+}
+input::placeholder,textarea::placeholder{color:var(--muted2)}
+input:focus,select:focus,textarea:focus{border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-ring)}
+input.err,select.err,textarea.err{border-color:var(--crimson); box-shadow:0 0 0 3px rgba(192,57,43,.12)}
+textarea{min-height:88px; resize:vertical}
+select{appearance:none; background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%); background-position:calc(100% - 19px) 50%,calc(100% - 14px) 50%; background-size:5px 5px,5px 5px; background-repeat:no-repeat; padding-right:36px}
+.fm{font-size:12px; color:var(--crimson); min-height:17px; margin-top:5px}
+.hint{font-size:11.5px; color:var(--muted2); margin-top:5px}
+
+/* Checkboxes (subjects / roles) */
+.chips{display:flex; flex-wrap:wrap; gap:9px}
+.chip{position:relative; display:inline-flex}
+.chip input{position:absolute; opacity:0; width:0; height:0}
+.chip span{
+  font-size:12.5px; padding:8px 15px; border:1px solid var(--border2); border-radius:var(--r-tag);
+  color:var(--muted); background:var(--surface); cursor:pointer; user-select:none; transition:all .18s;
+}
+.chip input:checked + span{border-color:var(--accent); color:var(--accent-d); background:var(--accent-t); font-weight:500}
+.chip input:focus-visible + span{outline:2px solid var(--accent); outline-offset:2px}
+
+/* Photo uploader */
+.photo-row{display:flex; align-items:flex-start; gap:18px; flex-wrap:wrap}
+.photo-box{
+  width:104px; height:104px; border-radius:var(--r-card); background:var(--surface2);
+  border:1px dashed var(--border2); display:flex; align-items:center; justify-content:center;
+  cursor:pointer; overflow:hidden; flex-shrink:0; transition:border-color .18s, background .18s;
+}
+.photo-box:hover{border-color:var(--accent); background:var(--accent-t)}
+.photo-box img{width:100%; height:100%; object-fit:cover}
+.photo-box .ph-hint{font-size:10px; color:var(--muted2); text-align:center; padding:6px; line-height:1.6}
+.form-actions{display:flex; gap:12px; flex-wrap:wrap; margin-top:10px}
+
+/* ── Panels (messages / success) ────────────────────── */
+.panel{border:1px solid var(--border); border-radius:var(--r-card); padding:18px 20px; background:var(--surface2); margin-bottom:16px}
+.panel-ok{border-color:var(--teal-edge); background:var(--teal-bg)}
+.panel-warn{border-color:var(--amber-edge); background:var(--amber-bg)}
+.panel-err{border-color:var(--crimson-edge); background:var(--crimson-bg)}
+.panel-title{font-size:15px; font-weight:600; margin-bottom:7px; color:var(--text)}
+.panel-ok .panel-title{color:var(--teal)}
+.panel-warn .panel-title{color:var(--amber)}
+.panel-err .panel-title{color:var(--crimson)}
+.panel p{font-size:13px; color:var(--body); line-height:1.85}
+.app-id{
+  font-family:var(--font-mono); font-size:17px; letter-spacing:.14em; color:var(--accent-d);
+  background:var(--field); border:1px solid var(--border2); border-radius:var(--r-btn);
+  padding:12px 18px; display:inline-block; margin:12px 0; user-select:all; box-shadow:var(--sh-1);
+}
+
+/* ── Result rows (tracker) ──────────────────────────── */
+.result-rows{margin-top:12px}
+.result-rows .row{display:flex; justify-content:space-between; gap:16px; padding:10px 0; border-bottom:1px solid var(--border); font-size:13.5px}
+.result-rows .row:last-child{border-bottom:0}
+.result-rows .k{font-family:var(--font-mono); color:var(--muted2); letter-spacing:.06em; text-transform:uppercase; font-size:10.5px}
+.result-rows .v{color:var(--text); text-align:right; font-weight:500}
+
+/* ── Contact — three equal columns in ONE card (visit / write / apply).
+   The footer no longer repeats these facts, so this is their only home. */
+.contact-ledger{position:relative; z-index:1; display:grid; grid-template-columns:repeat(3,minmax(0,1fr))}
+.contact-col{padding:24px; border-left:1px solid var(--border)}
+.contact-col:first-child{border-left:0}
+.contact-label{
+  font-family:var(--font-mono); font-size:9.5px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--muted2); margin-bottom:10px;
+}
+.contact-body{font-size:13.5px; color:var(--muted); line-height:1.85; margin-bottom:12px}
+.contact-body strong{color:var(--text); font-weight:500}
+.contact-body .en{
+  display:block; margin-top:4px;
+  font-family:var(--font-mono); font-size:10px; letter-spacing:.06em; color:var(--muted2);
+}
+.contact-body a{color:var(--accent-d); text-decoration:none; word-break:break-word}
+.contact-body a:hover{text-decoration:underline}
+.contact-links{display:flex; flex-direction:column; gap:7px; margin-top:2px}
+.contact-links a{
+  font-family:var(--font-mono); font-size:11px; letter-spacing:.05em;
+  color:var(--accent-d); text-decoration:none;
+  transition:color 150ms var(--ease);
+}
+.contact-links a:hover{color:var(--accent)}
+
+/* ── Campus gallery — asymmetric mosaic: the first photo is the feature
+   (2 columns × 2 rows) and the other five fill in around it. 1 feature
+   (4 cells) + 5 = the 9 cells of a 3×3 grid, so no row is left half empty.
+   Every figure is a flex column and its photo grows to fill the cell, so a
+   taller row never leaves a gap under a photo. */
+.gallery{display:grid; grid-template-columns:repeat(3,1fr); gap:16px}
+.gal{
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--r-card);
+  overflow:hidden; box-shadow:var(--sh-1); display:flex; flex-direction:column;
+}
+.gal--feature{grid-column:span 2; grid-row:span 2}
+/* the small tiles keep the 4:3 crop and set the row height; the feature's photo
+   flexes to fill the two rows it spans (min-height:0 stops the image's own
+   height from inflating the row) */
+.gal--feature .gal-photo{flex:1; min-height:0; aspect-ratio:auto}
+.gal-photo{flex:0 0 auto; aspect-ratio:4/3; display:flex; align-items:center; justify-content:center; text-align:center;
+  padding:12px; background:var(--surface2); border-bottom:1px solid var(--border);
+  color:var(--muted2); font-size:10px; letter-spacing:.12em; text-transform:uppercase; line-height:1.8}
+.gal-photo img{width:100%; height:100%; object-fit:cover}
+.gal-photo--img{padding:0}
+.gal-cap{padding:13px 15px; font-size:12.5px; color:var(--muted); line-height:1.7}
+.gal-cap b{display:block; color:var(--text); font-weight:600; font-size:13.5px; margin-bottom:2px}
+
+/* ── Teachers (faculty page) ──────────────────────────
+   The Principal is the page's featured profile: ONE card with a two-column
+   split inside it — a large 4:5 portrait on the left, the identity block (role,
+   name, subject chips, qualification, bio) on the right — carrying a subtle
+   accent border and the 8 % accent glow. Regular teachers are vertical profile
+   cards: photo container on top, then the identity block, with the blueprint's
+   sub-card hover (lift 1px + accent hairline). */
+.card--featured{
+  border-color:var(--accent-edge);
+  background:radial-gradient(520px 260px at 0% 0%, var(--glow), transparent 70%), var(--surface);
+}
+.card--featured .card-pad{padding:26px}
+.super-card{display:flex; gap:30px; align-items:center; flex-wrap:wrap}
+.super-photo,.tch-photo{
+  border-radius:var(--r-card); overflow:hidden; background:var(--surface2);
+  border:1px solid var(--border); display:flex; align-items:center; justify-content:center;
+}
+.super-photo{width:264px; aspect-ratio:4/5; flex-shrink:0; border-color:var(--accent-edge)}
+.tch-photo{width:100%; aspect-ratio:1/1}
+.super-photo img,.tch-photo img{width:100%; height:100%; object-fit:cover; object-position:center top}
+.ph-missing{border-style:dashed; border-color:var(--border2)}
+.card--sub:hover .ph-missing{border-color:var(--accent-edge)}
+.ph-missing span{
+  font-family:var(--font-mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--muted2); text-align:center; padding:0 8px;
+}
+.super-info{flex:1; min-width:250px}
+.super-role,.tch-role{
+  font-family:var(--font-mono); letter-spacing:.14em; text-transform:uppercase; color:var(--accent-d);
+}
+.super-role{font-size:10.5px; letter-spacing:.18em; margin-bottom:12px}
+.super-name{font-family:var(--font-head); font-weight:600; font-size:32px; letter-spacing:-.01em; color:var(--text); margin-bottom:16px}
+.super-qual{font-size:14px; color:var(--muted); line-height:1.85; margin-bottom:14px}
+.super-bio{font-size:14.5px; color:var(--body); line-height:1.9}
+
+/* faculty grid — vertical profile cards + the blueprint's sub-card hover (C2) */
+.card--sub{display:flex}
+.card--sub:hover{transform:translateY(-1px); border-color:var(--accent-edge)}
+.tch{display:flex; flex-direction:column; gap:12px}
+.tch-name{font-family:var(--font-head); font-weight:600; font-size:20px; letter-spacing:-.01em; color:var(--text)}
+.tch-role{font-size:9.5px}
+.tch-qual{font-size:12.5px; color:var(--muted); line-height:1.8}
+.tch-fields{display:flex; flex-wrap:wrap; gap:8px}
+/* subject chips are the one non-boxy chip on the site — the blueprint's 10px
+   chip radius (Part 1 `chip`), so a profile reads as tags, not status boxes */
+.tch-fields .tag{border-radius:var(--r-chip); padding:6px 12px; font-size:10px; letter-spacing:.1em}
+.tch-k{display:block; font-family:var(--font-mono); font-size:9.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted2); margin-bottom:5px}
+.tch-empty{font-family:var(--font-mono); font-size:12px; color:var(--muted2); border-bottom:1px dashed var(--border2)}
+
+/* ── Explore: stats + albums + photo grid ───────────── */
+.explore-stats{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:20px}
+.explore-stats .stat{
+  font-family:var(--font-mono); font-size:10.5px; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--muted); border:1px solid var(--border); border-radius:var(--r-tag);
+  padding:7px 15px; background:var(--surface); box-shadow:0 1px 2px rgba(17,20,35,.04);
+}
+.explore-stats .stat b{color:var(--accent-d); font-weight:500}
+.explore-stats .stat-live{color:var(--teal); border-color:var(--teal-edge); background:var(--teal-bg)}
+.album .sec-head{margin-bottom:20px}
+/* Standard-size contact-sheet tiles: a fixed 184px column so a single photo
+   never blows up, and the image is cropped to a uniform 4:3 box. */
+/* Explore albums: the same fixed 3-up ladder as the other card grids, so every
+   album row is evenly filled. Albums holding only one or two photos get a 2-up
+   grid instead — that fills the row (or exactly half of it) rather than leaving
+   three or four empty 184px slots on the right. */
+.photo-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
+.photo-grid--sparse{grid-template-columns:repeat(2,1fr)}
+.ph{
+  position:relative; display:block; padding:0; margin:0; text-align:left; cursor:zoom-in;
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--r-card);
+  overflow:hidden; font-family:var(--font-body); color:var(--text); box-shadow:var(--sh-1);
+}
+.ph img{
+  width:100%; height:auto; aspect-ratio:4/3; object-fit:cover;
+  display:block; background:var(--surface2);
+}
+.ph-cap{display:block; padding:9px 12px; font-size:12px; color:var(--muted); border-top:1px solid var(--border);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.ph:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+
+/* ── Lightbox ───────────────────────────────────────── */
+.lb{
+  position:fixed; inset:0; z-index:400; padding:26px;
+  background:rgba(6,9,13,.94); display:flex; align-items:center; justify-content:center;
+  opacity:0; transition:opacity .18s var(--ease);
+}
+.lb.open{opacity:1}
+.lb[hidden]{display:none}
+.lb-fig{margin:0; max-width:min(1080px,94vw); text-align:center}
+.lb-img{max-width:100%; max-height:76vh; border-radius:var(--r-card); background:var(--surface2); box-shadow:var(--sh-2)}
+.lb-cap{font-family:var(--font-mono); margin-top:14px; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:rgba(234,241,246,.72)}
+.lb-close,.lb-nav{
+  position:absolute; background:rgba(15,21,28,.94); border:1px solid var(--border2);
+  color:var(--text); border-radius:var(--r-btn); cursor:pointer; font-family:var(--font-body); line-height:1;
+}
+.lb-close{top:20px; right:22px; padding:10px 13px; font-size:14px}
+.lb-nav{top:50%; transform:translateY(-50%); padding:15px 13px; font-size:22px}
+.lb-prev{left:18px}
+.lb-next{right:18px}
+.lb-close:hover,.lb-nav:hover{background:var(--surface2); border-color:var(--accent); color:var(--accent-d)}
+
+/* ── Back link / page head ──────────────────────────── */
+.back-link{
+  display:inline-block; margin:24px 0 6px; font-family:var(--font-mono); font-size:10.5px;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--muted);
+}
+.back-link:hover{color:var(--accent-d)}
+.page-head{text-align:center; padding:38px 0 30px}
+.page-head h1{font-family:var(--font-head); font-size:38px; margin-bottom:10px}
+.page-head p{color:var(--muted); font-size:14.5px; line-height:1.9; max-width:600px; margin:0 auto}
+
+/* ── Footer — compact: brand + social on one row, contact line, © base ── */
+.site-footer{margin-top:64px; border-top:1px solid var(--gold-edge); background:var(--surface); position:relative; overflow:hidden}
+.site-footer::before{
+  content:""; position:absolute; inset:0; pointer-events:none; opacity:.5;
+  background-image:var(--girih); background-size:72px 72px;
+  -webkit-mask-image:linear-gradient(180deg,#000,transparent 78%);
+  mask-image:linear-gradient(180deg,#000,transparent 78%);
+}
+.footer-in{position:relative; z-index:1; max-width:1080px; margin:0 auto; padding:22px 24px 18px}
+.footer-top{display:flex; align-items:center; justify-content:space-between; gap:14px 24px; flex-wrap:wrap}
+.footer-brand{display:flex; align-items:center; gap:11px; min-width:0}
+.footer-logo{
+  height:34px; width:auto; max-width:42px; object-fit:contain; flex-shrink:0;
+  background:var(--surface2); border:1px solid var(--border); border-radius:4px; padding:3px;
+}
+.footer-name{display:block; font-family:var(--font-head); font-weight:600; font-size:15px; letter-spacing:-.01em; color:var(--text)}
+.footer-slogan{
+  display:block; margin-top:3px; font-family:var(--font-mono); font-size:8.5px;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--muted2);
+}
+.footer-social{display:flex; align-items:center; gap:7px}
+.soc{
+  display:inline-flex; align-items:center; justify-content:center; width:31px; height:31px;
+  border:1px solid var(--border2); border-radius:4px; background:var(--surface); color:var(--muted);
+  transition:border-color .18s, color .18s, background .18s;
+}
+.soc svg{width:15px; height:15px; fill:currentColor}
+.soc:hover{border-color:var(--accent); color:var(--accent-d); background:var(--accent-t)}
+.soc--off{opacity:.4; cursor:default}
+.soc--off:hover{border-color:var(--border2); color:var(--muted); background:var(--surface)}
+/* Footer sitemap — the footer's job is navigation + identity + legal.
+   Contact facts live in #contact only, so they are not repeated here. */
+.footer-nav{
+  display:grid; grid-template-columns:1.25fr 1fr 1fr; gap:18px 24px;
+  margin-top:18px; padding-top:16px; border-top:1px solid var(--border);
+}
+.footer-col-title{
+  font-family:var(--font-mono); font-size:8.5px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--muted2); margin-bottom:9px;
+}
+.footer-col ul{list-style:none; display:flex; flex-direction:column; gap:5px}
+.footer-col a{
+  font-size:12.5px; color:var(--muted); text-decoration:none;
+  transition:color 150ms var(--ease);
+}
+.footer-col a:hover{color:var(--accent-d)}
+.footer-base{
+  margin-top:15px; padding-top:11px; border-top:1px solid var(--border);
+  font-family:var(--font-mono); font-size:9px; letter-spacing:.09em; text-transform:uppercase; color:var(--muted2);
+}
+
+/* ── Toast ──────────────────────────────────────────── */
+.toast{
+  position:fixed; left:50%; bottom:28px; transform:translateX(-50%) translateY(10px);
+  background:var(--surface2); border:1px solid var(--border2); border-radius:var(--r-btn);
+  color:var(--text); font-size:13px; padding:12px 22px; z-index:500;
+  opacity:0; pointer-events:none; transition:opacity .2s, transform .2s var(--ease);
+  box-shadow:var(--sh-2);
+}
+.toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
+
+/* ── Reveal animations (section-level transitions) ──── */
+.rv{
+  opacity:0; transform:translateY(20px);
+  transition:opacity .62s var(--ease-soft) var(--d,0ms), transform .62s var(--ease-soft) var(--d,0ms);
+}
+.rv.in{opacity:1; transform:none}
+.grid .card.rv{transition-duration:.52s}
+
+/* section title rules draw in as the section arrives */
+.sec-rule{transform:scaleX(0); transform-origin:left; transition:transform .8s var(--ease-soft) .18s}
+.sec-head.in .sec-rule{transform:scaleX(1)}
+.sec-head .eyebrow, .sec-head .sec-title{transition:opacity .5s var(--ease-soft) var(--d,0ms), transform .5s var(--ease-soft) var(--d,0ms)}
+
+/* ── Responsive ─────────────────────────────────────── */
+@media (max-width:1280px){
+  .brand-name{font-size:16px}
+  .nav a{padding:8px 10px; font-size:13px}
+  .header-in{gap:16px}
+}
+@media (max-width:1120px){
+  .menu-btn{display:inline-flex; order:3}
+  .apply-wrap{order:4; margin-left:auto}
+  .nav{
+    display:none; position:absolute; top:100%; left:0; right:0;
+    flex-direction:column; align-items:stretch; gap:0; margin-left:0;
+    background:var(--surface); border-bottom:1px solid var(--border);
+    padding:10px 20px 16px; box-shadow:var(--sh-2);
+  }
+  .nav.open{display:flex}
+  .nav a{padding:13px 4px; font-size:14px; border-bottom:1px solid var(--border); border-radius:0}
+  .nav a:last-child{border-bottom:0}
+  .nav a.active{background:transparent}
+  .header-in{position:relative}
+}
+@media (max-width:900px){
+  .hero h1{font-size:38px}
+  .hero-in{padding:56px 20px 52px}
+  .hero-logo{height:108px}
+  .sec-title{font-size:24px}
+  .section{padding:56px 0 8px}
+  .fgrid{grid-template-columns:1fr}
+  .hist-feed{max-width:none}
+  .hist-toolbar{margin-bottom:10px}
+  .contact-ledger{grid-template-columns:1fr}
+  .contact-col{padding:16px 20px; border-left:0; border-top:1px solid var(--border)}
+  .contact-col:first-child{padding-top:20px; border-top:0}
+  /* the stepper tightens: shorter rail, smaller nodes */
+  .stepper{padding-left:37px}
+  .stepper::before{left:12px}
+  .stepper-node{left:-37px; top:12px; width:25px; height:25px; font-size:9px}
+  .chain-note,.chain-more{margin-left:37px}
+}
+@media (max-width:760px){
+  .sec-head{flex-wrap:wrap; gap:12px}
+  .sec-title{white-space:normal}
+  .eyebrow{white-space:normal}
+  .sec-rule{min-width:100%}
+  .grid-streams,.grid-values,.gallery,.photo-grid{grid-template-columns:repeat(2,1fr)}
+  .stream-grid{grid-template-columns:1fr}
+  .footer-nav{grid-template-columns:1fr 1fr; gap:16px 20px}
+  /* the mosaic goes uniform at 2-up: six photos = three full rows */
+  .gal--feature{grid-column:auto; grid-row:auto}
+  .gal--feature .gal-photo{flex:0 0 auto; aspect-ratio:4/3}
+  .aspects{grid-template-columns:1fr}
+  .aspect:nth-child(2n){border-left:0}
+  .aspect:nth-child(-n+2){border-top:1px solid var(--border)}
+  .aspect:first-child{border-top:0}
+  .super-card{gap:22px}
+  .super-photo{width:196px}
+  .super-name{font-size:26px}
+  .steps-row{grid-template-columns:1fr; gap:16px; padding-bottom:18px; margin-bottom:18px}
+  .step-block{padding:0}
+  .step-block + .step-block{border-left:0; border-top:1px solid var(--border); padding-top:16px}
+}
+@media (max-width:560px){
+  .header-in{padding:10px 14px; gap:12px}
+  .brand-name{font-size:15px}
+  .brand-sub{font-size:8px}
+  .apply-btn{height:32px; padding:0 12px; font-size:11px; gap:6px}
+  .apply-btn-en,.menu-btn-label{display:none}
+  .hero-basmala{font-size:20px; gap:10px; margin-bottom:20px}
+  .hero-basmala::before,.hero-basmala::after{display:none}
+  .menu-btn{padding:9px 12px; font-size:13px}
+  .hero h1{font-size:31px}
+  .btn-lg{padding:13px 20px; font-size:12px}
+  .photo-grid{grid-template-columns:repeat(2,1fr); gap:10px}
+  .photo-grid--sparse{grid-template-columns:1fr}
+  .grid-streams,.grid-values{grid-template-columns:1fr}
+  .gallery{grid-template-columns:repeat(2,1fr); gap:12px}
+  .lb{padding:14px}
+  .lb-nav{padding:12px 11px; font-size:18px}
+  .lb-prev{left:8px}
+  .lb-next{right:8px}
+}
+
+/* Very narrow phones (≤430px): the brand name steps aside so the Apply button and
+   the controls stay on one row instead of pushing the page sideways. The logo
+   keeps the identity and the hero repeats the full name right below. */
+@media (max-width:430px){
+  .brand-name{display:none}
+  .header-in{gap:10px; padding:10px 12px}
+  .menu-btn{padding:8px 11px}
+  .apply-btn{height:32px; padding:0 10px; font-size:11px; gap:5px}
+}
+
+/* ── Reduced motion ─────────────────────────────────── */
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{transition-duration:.01ms !important; animation-duration:.01ms !important}
+  .rv{opacity:1; transform:none}
+  .sec-rule{transform:none}
+  .card:hover{transform:none}
+}
