@@ -1,0 +1,86 @@
+{
+  "_readme": [
+    "Institute timeline / history chain.",
+    "HOW TO UPDATE: edit the \"entries\" list below (one object per milestone) and save/commit the file.",
+    "  year    - the year (numbers are shown in Bengali numerals automatically), required",
+    "  title   - short heading in Bangla, required",
+    "  titleEn - the same heading in English (used for the year row tooltip / accessibility)",
+    "  desc    - one or two sentences of detail in Bangla",
+    "  descEn  - ONE short result-first English line (max ~90 chars). This is an orientation",
+    "            line for readers who do not read Bangla - it is NOT a translation of desc.",
+    "  tag     - optional Bangla chip label, e.g. \"সূচনা\" / \"নতুন অর্জন\"",
+    "  tagEn   - the chip in English (the chip itself renders in English uppercase)",
+    "Order does not matter: the page sorts newest-first automatically (change \"sort\" to \"oldest-first\" if you prefer).",
+    "OPTIONAL NO-CODE MODE: put a published Google Sheet CSV URL in \"sheetCsvUrl\" below and the page will read",
+    "the timeline straight from that sheet (columns: year,title,desc,tag - add titleEn/descEn/tagEn for English).",
+    "ACCESS: only someone with access to this file (the repository) or to that sheet can change the timeline.",
+    "The published website is read-only: it only ever sends GET requests and renders every value as escaped text."
+  ],
+  "sheetCsvUrl": "",
+  "sort": "newest-first",
+  "entries": [
+    {
+      "year": "2026",
+      "title": "দুই বিভাগে পরিচালিত পাঠদান",
+      "titleEn": "Taught in two divisions",
+      "desc": "মূল ক্যাম্পাস ও প্রতিষ্ঠান বিভাগ এবং হিফজুল কুরআন বিভাগ (নূরানী · নাযেরা · হিফজ) — NCTB ও মাদ্রাসা শিক্ষা বোর্ড, ঢাকা অনুসৃত পাঠক্রম।",
+      "descEn": "Two divisions, two curricula: general and Hifzul Qur’an.",
+      "tag": "বর্তমান ধারা",
+      "tagEn": "Current stream"
+    },
+    {
+      "year": "2024",
+      "title": "দাখিল পরীক্ষায় শতভাগ পাশ",
+      "titleEn": "A hundred percent pass in Dakhil",
+      "desc": "২০২৪ সালে দাখিল পরীক্ষায় ২১ জনে ১০টি A+ সহ শতভাগ পাশ।",
+      "descEn": "21 candidates, 10 A+ — every one passed.",
+      "tag": "সাফল্য",
+      "tagEn": "Achievement"
+    },
+    {
+      "year": "2023",
+      "title": "জেলা পর্যায়ে প্রথম স্থান",
+      "titleEn": "First place at district level",
+      "desc": "বাংলাদেশ প্রাইভেট মাদরাসা ওয়েলফেয়ার অ্যাসোসিয়েশন কর্তৃক আয়োজিত মেধা মূল্যায়ন-২০২৩ পরীক্ষায় ২৩টি ট্যালেন্টপুলসহ মোট ৩৪টি বৃত্তি পেয়ে জেলা পর্যায়ে প্রথম স্থান অর্জন।",
+      "descEn": "34 scholarships, 23 talent-pool — first in the district.",
+      "tag": "ঈর্ষণীয় সাফল্য",
+      "tagEn": "Landmark result"
+    },
+    {
+      "year": "2021",
+      "title": "দাখিল পরীক্ষায় শতভাগ পাশ",
+      "titleEn": "A hundred percent pass in Dakhil",
+      "desc": "২০২১ সালে দাখিল পরীক্ষায় ১৪ জনে ৯টি A+ সহ শতভাগ পাশ।",
+      "descEn": "14 candidates, 9 A+ — every one passed.",
+      "tag": "ঈর্ষণীয় সাফল্য",
+      "tagEn": "Landmark result"
+    },
+    {
+      "year": "2018",
+      "title": "৫ম শ্রেণি সমাপনীতে তৃতীয় স্থান",
+      "titleEn": "Third place in the Class 5 completion",
+      "desc": "৫ম শ্রেণির সমাপনী পরীক্ষায় ২০১৮ সালে ৪টি A+, ৫টি টেলেন্টপুল এবং ১টি সাধারণ গ্রেডে বৃত্তিসহ শতভাগ পাশ করে উপজেলা পর্যায়ে তৃতীয় স্থান অর্জন।",
+      "descEn": "4 A+, 6 scholarships — third in the upazila.",
+      "tag": "বিশেষ সাফল্য",
+      "tagEn": "Special achievement"
+    },
+    {
+      "year": "2017",
+      "title": "এবতেদায়ী ও জেডিসিতে সাফল্য",
+      "titleEn": "Success in Ebtedayee and JDC",
+      "desc": "২০১৭ সালে এবতেদায়ী সমাপনী পরীক্ষায় ১টি A+ সহ ৫টি বৃত্তি লাভ এবং জেডিসি পরীক্ষায় ৩টি A+ সহ শতভাগ পাশ।",
+      "descEn": "5 Ebtedayee scholarships; every JDC candidate passed.",
+      "tag": "বিশেষ সাফল্য",
+      "tagEn": "Special achievement"
+    },
+    {
+      "year": "2003",
+      "title": "প্রতিষ্ঠা",
+      "titleEn": "Foundation",
+      "desc": "ব্রাহ্মণপাড়া, কুমিল্লায় জামিয়া ইসলামিয়া মদরাসার যাত্রা শুরু — কুরআন ও সুন্নাহর আলোকে দ্বীনি শিক্ষার সূচনা।",
+      "descEn": "The madrasah opens its doors in Brahmanpara.",
+      "tag": "সূচনা",
+      "tagEn": "Beginning"
+    }
+  ]
+}

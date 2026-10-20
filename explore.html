@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="bn" data-theme="dusk" data-lang="bi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>এক্সপ্লোর · Explore — ছবির সংগ্রহ · জামিয়া ইসলামিয়া মাদরাসা</title>
+<meta name="description" content="জামিয়া ইসলামিয়া মাদরাসার ছবির সংগ্রহ — ক্যাম্পাস, শিক্ষার্থী, শ্রেণিকক্ষ, মসজিদ, আয়োজন ও প্রোগ্রামের ছবি অ্যালবাম অনুযায়ী।">
+<link rel="icon" href="assets/img/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<meta name="theme-color" content="#090d12">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter+Tight:wght@500;600;700&family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
+<script src="assets/js/prefs.js"></script>
+</head>
+<body>
+
+<header class="site-header" id="siteHeader"></header>
+
+<div class="wrap">
+  <a class="back-link" href="index.html">← হোম · Home</a>
+
+  <div class="page-head">
+    <h1>ছবির সংগ্রহ</h1>
+    <p>প্রতিষ্ঠানের ক্যাম্পাস, শিক্ষার্থী, শ্রেণিকক্ষ, মসজিদ, আয়োজন ও প্রোগ্রামের ছবি — অ্যালবাম অনুযায়ী সাজানো। ছবিতে ক্লিক করে বড় করে দেখুন।</p>
+    <p class="sec-en" lang="en">Every album, every photo — open one to see it full size.</p>
+    <div class="explore-stats" id="exploreStats"></div>
+  </div>
+
+  <div id="albumList" aria-live="polite"></div>
+</div>
+
+<footer class="site-footer" id="siteFooter"></footer>
+
+<!-- ══════════ LIGHTBOX ══════════ -->
+<div class="lb" id="lightbox" role="dialog" aria-modal="true" aria-label="ছবি দেখুন" hidden>
+  <button class="lb-close" id="lbClose" type="button" aria-label="বন্ধ করুন · Close">✕</button>
+  <button class="lb-nav lb-prev" id="lbPrev" type="button" aria-label="আগের ছবি · Previous">‹</button>
+  <button class="lb-nav lb-next" id="lbNext" type="button" aria-label="পরের ছবি · Next">›</button>
+  <figure class="lb-fig">
+    <img class="lb-img" id="lbImg" src="" alt="">
+    <figcaption class="lb-cap" id="lbCap"></figcaption>
+  </figure>
+</div>
+
+<script src="assets/js/social-icons.js"></script>
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/site.js"></script>
+<script src="assets/js/explore.js"></script>
+</body>
+</html>

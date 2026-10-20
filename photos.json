@@ -1,0 +1,73 @@
+{
+  "generatedAt": "2026-10-18T17:12:26.208Z",
+  "albumCount": 4,
+  "photoCount": 6,
+  "albums": [
+    {
+      "name": "Campus",
+      "title": "ক্যাম্পাস · Campus",
+      "photos": [
+        {
+          "src": "Photos/Campus/campus.jpg",
+          "file": "campus.jpg",
+          "caption": "Campus",
+          "w": 1000,
+          "h": 751
+        }
+      ]
+    },
+    {
+      "name": "Events",
+      "title": "আয়োজন · Events",
+      "photos": [
+        {
+          "src": "Photos/Events/event-1.jpg",
+          "file": "event-1.jpg",
+          "caption": "Event 1",
+          "w": 1000,
+          "h": 752
+        },
+        {
+          "src": "Photos/Events/event-2.jpg",
+          "file": "event-2.jpg",
+          "caption": "Event 2",
+          "w": 1000,
+          "h": 752
+        }
+      ]
+    },
+    {
+      "name": "Mosque",
+      "title": "মসজিদ · Mosque",
+      "photos": [
+        {
+          "src": "Photos/Mosque/mosque.jpg",
+          "file": "mosque.jpg",
+          "caption": "Mosque",
+          "w": 1000,
+          "h": 750
+        }
+      ]
+    },
+    {
+      "name": "Students",
+      "title": "শিক্ষার্থী · Students",
+      "photos": [
+        {
+          "src": "Photos/Students/students-1.jpg",
+          "file": "students-1.jpg",
+          "caption": "Students 1",
+          "w": 1000,
+          "h": 750
+        },
+        {
+          "src": "Photos/Students/students-2.jpg",
+          "file": "students-2.jpg",
+          "caption": "Students 2",
+          "w": 1000,
+          "h": 750
+        }
+      ]
+    }
+  ]
+}
