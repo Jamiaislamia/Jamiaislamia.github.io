@@ -1,10 +1,13 @@
 /* ═══════════════════════════════════════════════════════════════
    HISTORY TIMELINE ("the chain")
    Reads website/history.json (owned by the authority) and renders the
-   institute's milestones, newest first.
+   institute's milestones, oldest first (the band reads left → right, founding
+   year to today).
 
-   Layout (owner request): ONE column — filter chips + a year row sit in a
-   toolbar above the stepper, so nothing is squeezed into a ~200px rail.
+   Layout (owner request): ONE column — a heritage band (a node + year pill per
+   milestone, joined by arrows) IS the year nav, the filter chips sit in a
+   toolbar above it, and the chronicle below is as wide as the section, so
+   nothing is squeezed into a ~200px rail and no card sits in a dead band.
    Language law: the year chip and the English tag chip are the only chrome;
    the title and note are Bangla, and `descEn` supplies ONE short result-first
    English line (never a translated paragraph).
@@ -141,13 +144,19 @@
       counts[t]++;
     });
     if (!order.length) { box.innerHTML = ''; return; }
+    /* The count is decoration for the eye: it sits behind a hairline so it
+       cannot be mistaken for a dropdown caret, and it is kept out of the
+       button's accessible name (aria-label carries it) so "সব৭" is never read
+       aloud as one word. */
     var html = '<button class="hist-filter" type="button" data-tag="" aria-pressed="' +
-      (activeTag === '' ? 'true' : 'false') + '" title="All milestones"><span>' +
-      esc('সব') + '</span><b>' + esc(bn(entries.length)) + '</b></button>';
+      (activeTag === '' ? 'true' : 'false') + '" aria-label="' + esc('সব · ' + bn(entries.length) + 'টি মাইলফলক') +
+      '" title="All milestones"><span>' +
+      esc('সব') + '</span><b aria-hidden="true">' + esc(bn(entries.length)) + '</b></button>';
     order.forEach(function (t) {
       html += '<button class="hist-filter" type="button" data-tag="' + esc(t) + '" aria-pressed="' +
-        (activeTag === t ? 'true' : 'false') + '" title="' + esc(ens[t] || t) + '"><span>' +
-        esc(t) + '</span><b>' + esc(bn(counts[t])) + '</b></button>';
+        (activeTag === t ? 'true' : 'false') + '" aria-label="' + esc(t + ' · ' + bn(counts[t]) + 'টি') +
+        '" title="' + esc(ens[t] || t) + '"><span>' +
+        esc(t) + '</span><b aria-hidden="true">' + esc(bn(counts[t])) + '</b></button>';
     });
     box.innerHTML = html;
     Array.prototype.forEach.call(box.querySelectorAll('.hist-filter'), function (b) {
@@ -159,9 +168,12 @@
     });
   }
 
-  /* Year row — replaces the old "on this page" card. Jumping to a milestone
-     that is still behind the toggle expands the feed first. */
-  function renderYears(shown, all) {
+  /* The heritage band — one node + year pill per filtered milestone (the WHOLE
+     timeline, even while the chronicle is collapsed), joined by arrows, the
+     calendar's current year filled gold. It IS the year nav, so there is no
+     second chip row: jumping to a milestone that is still behind the toggle
+     expands the feed first. */
+  function renderRail(shown, all) {
     var box = el('historyYears');
     if (!box) return;
     if (!shown.length) { box.innerHTML = ''; return; }
@@ -169,8 +181,14 @@
     shown.forEach(function (e) {
       var i = all.indexOf(e);
       var y = yearOf(e);
-      html += '<a href="#milestone-' + i + '" data-i="' + i + '" title="' + esc(e.title || '') + '">' +
-        esc(isYear(y) ? bn(y) : y) + '</a>';
+      /* gold node only on the calendar's real current year — and only while
+         that milestone is actually shown */
+      var isNow = i === all.length - 1;
+      html += '<a class="hist-node' + (isNow ? ' hist-node--now' : '') + '" href="#milestone-' + i +
+        '" data-i="' + i + '" title="' + esc(e.title || '') + '">' +
+        '<span class="hist-node-dot" aria-hidden="true"></span>' +
+        '<span class="stepper-year">' + esc(isYear(y) ? bn(y) : y) + '</span>' +
+      '</a>';
     });
     box.innerHTML = html;
     Array.prototype.forEach.call(box.querySelectorAll('a'), function (a) {
@@ -193,7 +211,25 @@
     if (node) node.scrollIntoView({ block: 'start' });
   }
 
-  /* Active year chip follows the step nearest the top of the viewport. */
+  /* The section's ONE English orientation line + the count label — both read
+     from the data, so an 8th milestone can never make the copy lie. */
+  function renderSummary(entries) {
+    var en = el('historyCount');
+    var total = el('historyTotal');
+    if (!en && !total) return;
+    if (!entries.length) {
+      if (en) en.textContent = '';
+      if (total) total.textContent = '';
+      return;
+    }
+    var first = yearNumber(entries[0].year);
+    var last = yearNumber(entries[entries.length - 1].year);
+    if (en) en.textContent = entries.length + ' milestones · ' + first + ' → ' + last +
+      ' — the rail below jumps to any year.';
+    if (total) total.textContent = bn(entries.length) + 'টি মাইলফলক';
+  }
+
+  /* Active node in the band follows the step nearest the top of the viewport. */
   var spy = null;
   function initSpy() {
     var box = el('historyYears');
@@ -217,7 +253,8 @@
   }
 
 
-  /* The show-more control lives in the toolbar, not under the feed. */
+  /* The show-more control closes the band — it belongs to the timeline it
+     reveals, not to the filter toolbar. */
   function renderToggle(total) {
     var btn = el('chainToggle');
     if (!btn) return;
@@ -239,6 +276,10 @@
   function clearPanels() {
     var filters = el('historyFilters');
     if (filters) filters.innerHTML = '';
+    var total = el('historyTotal');
+    if (total) total.textContent = '';
+    var count = el('historyCount');
+    if (count) count.textContent = '';
     var years = el('historyYears');
     if (years) years.innerHTML = '';
     var toggle = el('chainToggle');
@@ -262,30 +303,29 @@
     var collapsed = !chainExpanded && filtered.length > CHAIN_LIMIT;
     var shown = collapsed ? filtered.slice(0, CHAIN_LIMIT) : filtered;
 
-    /* Each milestone is one step on the heritage rail: a numbered gold node,
-       then a card whose meta row is the year + English tag chip, then the
-       Bangla title, ONE English line and the Bangla note. */
-    /* Numbering runs with the calendar, not with the visible slice: the newest
-       milestone carries the highest number and the rail counts down to ০১ at
-       the founding year. Filtering or expanding therefore never renumbers a
-       step — the gaps a filter leaves are honest. */
+    /* The chronicle: one full-width step per milestone. The step number runs
+       with the calendar (০১ at the founding year, ascending), the year sits in
+       the card's left gutter, and the section's ONE English line closes the
+       card under a hairline — never a translated paragraph. */
     var html = '<div class="stepper">';
     shown.forEach(function (e, n) {
       var i = entries.indexOf(e);
       var year = yearOf(e);
       var te = enOf(e, 'tag') || e.tag;   /* chip label: English, Bangla fallback */
       var de = enOf(e, 'desc');
+      var isNow = i === entries.length - 1;   /* chronological: today is the last step */
       html +=
-        '<div class="stepper-step' + (i === 0 ? ' stepper-step--now' : '') + '" id="milestone-' + i + '">' +
-          '<span class="stepper-node" aria-hidden="true">' + esc(stepNumber(entries.length - i)) + '</span>' +
+        '<div class="stepper-step' + (isNow ? ' stepper-step--now' : '') + '" id="milestone-' + i + '">' +
+          '<span class="stepper-node" aria-hidden="true">' + esc(stepNumber(i + 1)) + '</span>' +
           '<article class="card chain-item">' +
             '<div class="stepper-body">' +
-              '<div class="stepper-meta">' + yearChip(year) +
+              yearChip(year) +
+              '<div class="stepper-head">' +
                 (te ? '<span class="stepper-chip" lang="en">' + esc(te) + '</span>' : '') +
+                (e.title ? '<h3 class="stepper-title">' + esc(e.title) + '</h3>' : '') +
               '</div>' +
-              (e.title ? '<h3 class="stepper-title">' + esc(e.title) + '</h3>' : '') +
-              (de ? '<p class="stepper-en" lang="en">' + esc(de) + '</p>' : '') +
               (e.desc ? '<p class="stepper-desc">' + esc(e.desc) + '</p>' : '') +
+              (de ? '<p class="stepper-en" lang="en">' + esc(de) + '</p>' : '') +
             '</div>' +
           '</article>' +
         '</div>';
@@ -295,7 +335,12 @@
     host.innerHTML = html;
 
     renderToggle(filtered.length);
-    renderYears(shown, entries);
+    /* The band is the whole timeline at a glance (every filtered milestone), not
+       just the slice the chronicle shows — otherwise the current year disappears
+       behind the toggle and the band stops being a navigator. Clicking a node
+       whose step is still collapsed expands the chronicle first. */
+    renderRail(filtered, entries);
+    renderSummary(entries);
   }
 
   function renderEmpty() {

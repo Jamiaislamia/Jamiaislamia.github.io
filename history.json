@@ -17,7 +17,7 @@
     "The published website is read-only: it only ever sends GET requests and renders every value as escaped text."
   ],
   "sheetCsvUrl": "",
-  "sort": "newest-first",
+  "sort": "oldest-first",
   "entries": [
     {
       "year": "2026",
