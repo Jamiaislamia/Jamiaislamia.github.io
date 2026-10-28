@@ -1,0 +1,3 @@
+# Publish repo - keep every file byte-exact (no CRLF/LF rewriting).
+* -text
+

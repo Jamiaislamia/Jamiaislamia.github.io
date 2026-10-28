@@ -115,8 +115,13 @@
 
   function send(payload) {
     var btn = el('s-submit');
+    var guard = (typeof rtBotCheck === 'function') ? rtBotCheck('appForm') : { ok: true };
+    if (!guard.ok) {
+      window.siteToast && window.siteToast('একটু অপেক্ষা করে আবার চেষ্টা করুন · Please wait a moment and try again');
+      return Promise.resolve();
+    }
     if (btn) { btn.disabled = true; btn.textContent = 'জমা হচ্ছে… · Submitting…'; }
-    return rtPost('admissions', payload)
+    return rtPut('admissions', payload.appId || _appId, payload)
       .then(function () { showSuccess(false); window.siteToast && window.siteToast('আবেদন জমা হয়েছে · Submitted'); })
       .catch(function () {
         rtSaveLocalFallback(payload);
@@ -161,6 +166,7 @@
   document.addEventListener('DOMContentLoaded', function () {
     var form = el('appForm');
     if (form) form.addEventListener('submit', onSubmit);
+    if (typeof rtArmForm === 'function') rtArmForm('appForm');
 
     var resetBtn = el('s-reset');
     if (resetBtn) resetBtn.addEventListener('click', function () {
@@ -196,7 +202,7 @@
     if (retryBtn) retryBtn.addEventListener('click', function () {
       if (!_payload) return;
       retryBtn.disabled = true;
-      rtPost('admissions', _payload).then(function () {
+      rtPut('admissions', _payload.appId || _appId, _payload).then(function () {
         showSuccess(false);
         window.siteToast && window.siteToast('আবেদন সার্ভারে জমা হয়েছে · Submitted');
       }).catch(function () {

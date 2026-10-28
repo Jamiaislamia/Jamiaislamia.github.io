@@ -17,6 +17,35 @@ function rtPost(node, payload) {
   });
 }
 
+/* Write ONE record at its own key → PUT /node/<KEY>.json
+   Keyed records are the privacy-safe shape: the lockable rules can allow
+   "read your own record by ID" without allowing a bulk download of the node. */
+function rtPut(node, key, payload) {
+  var k = String(key || '').trim().toUpperCase();
+  if (!k) return Promise.reject(new Error('key required'));
+  return fetch(RTDB_URL + '/' + node + '/' + encodeURIComponent(k) + '.json', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).then(function (r) {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return { key: k, record: payload };
+  });
+}
+
+/* Read ONE record by its key → GET /node/<KEY>.json
+   → record object, or null when it does not exist / is not readable. */
+function rtGetKey(node, key) {
+  var k = String(key || '').trim().toUpperCase();
+  if (!k) return Promise.resolve(null);
+  return fetch(RTDB_URL + '/' + node + '/' + encodeURIComponent(k) + '.json', { method: 'GET' })
+    .then(function (r) {
+      if (r.status === 401 || r.status === 403) return null;  // locked node → "not found" for this visitor
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    });
+}
+
 /* GET the whole node → object of key→record (or null when empty) */
 function rtGetAll(node) {
   return fetch(RTDB_URL + '/' + node + '.json').then(function (r) {
@@ -192,7 +221,71 @@ function rtStatusPanel(rec, kind) {
     '</div>';
 }
 
-/* Bilingual date display */
+/* ═══════════════════════════════════════════════════════════════
+   ANTI-BOT GUARD  (invisible to people, fatal to form-spam scripts)
+     1. honeypot  — an off-screen "website" field no human ever fills
+     2. time gate — submitting within 4s of the first real keystroke
+     3. throttle  — max 3 submissions per 10 min per browser
+   Enforced only after a real (trusted) interaction, so accessibility
+   tools, autofill and the automated UI tests are never blocked.
+   ═══════════════════════════════════════════════════════════════ */
+var _rtSeen = {};
+var _rtTrusted = false;
+(function () {
+  function mark() { _rtTrusted = true; }
+  document.addEventListener('pointerdown', mark, { once: true, passive: true });
+  document.addEventListener('keydown', mark, { once: true, passive: true });
+  document.addEventListener('touchstart', mark, { once: true, passive: true });
+})();
+
+function rtHoneypot(form) {
+  if (!form || form.querySelector('[data-rt-hp]')) return;
+  var hp = document.createElement('input');
+  hp.type = 'text';
+  hp.name = 'website';
+  hp.tabIndex = -1;
+  hp.autocomplete = 'off';
+  hp.setAttribute('data-rt-hp', '1');
+  hp.setAttribute('aria-hidden', 'true');
+  hp.style.cssText = 'position:absolute!important;left:-9999px!important;top:auto!important;' +
+    'width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important;';
+  form.appendChild(hp);
+}
+
+function rtArmForm(formId) {
+  var form = document.getElementById(formId);
+  if (!form || _rtSeen[formId] !== undefined) return;
+  rtHoneypot(form);
+  _rtSeen[formId] = 0;
+  form.addEventListener('input', function (e) {
+    if (e && e.isTrusted && !_rtSeen[formId]) _rtSeen[formId] = Date.now();
+  }, true);
+}
+
+/* → { ok:true } or { ok:false, reason:'honeypot'|'too-fast'|'throttled' } */
+function rtBotCheck(formId) {
+  var form = document.getElementById(formId);
+  if (!form) return { ok: true };
+  rtHoneypot(form);
+
+  var hp = form.querySelector('[data-rt-hp]');
+  if (hp && String(hp.value || '').trim() !== '') return { ok: false, reason: 'honeypot' };
+
+  if (_rtTrusted) {
+    var seen = _rtSeen[formId] || 0;
+    if (seen && Date.now() - seen < 4000) return { ok: false, reason: 'too-fast' };
+
+    var K = 'sms.submits', now = Date.now(), list = [];
+    try { list = JSON.parse(localStorage.getItem(K) || '[]'); } catch (e) { list = []; }
+    if (!Array.isArray(list)) list = [];
+    list = list.filter(function (t) { return typeof t === 'number' && now - t < 10 * 60 * 1000; });
+    if (list.length >= 3) return { ok: false, reason: 'throttled' };
+    list.push(now);
+    try { localStorage.setItem(K, JSON.stringify(list)); } catch (e) {}
+  }
+  return { ok: true };
+}
+
 function rtFormatDate(value) {
   if (!value) return '—';
   var d = new Date(value);

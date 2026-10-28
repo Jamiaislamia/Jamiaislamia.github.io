@@ -112,8 +112,13 @@
 
   function send(payload) {
     var btn = el('t-submit');
+    var guard = (typeof rtBotCheck === 'function') ? rtBotCheck('tchForm') : { ok: true };
+    if (!guard.ok) {
+      window.siteToast && window.siteToast('একটু অপেক্ষা করে আবার চেষ্টা করুন · Please wait a moment and try again');
+      return Promise.resolve();
+    }
     if (btn) { btn.disabled = true; btn.textContent = 'জমা হচ্ছে… · Submitting…'; }
-    return rtPost('teacher-applications', payload)
+    return rtPut('teacher-applications', payload.appId, payload)
       .then(function () { showSuccess(false); window.siteToast && window.siteToast('আবেদন জমা হয়েছে · Submitted'); })
       .catch(function () {
         rtSaveLocalFallback(payload);
@@ -192,7 +197,7 @@
     if (retryBtn) retryBtn.addEventListener('click', function () {
       if (!_payload) return;
       retryBtn.disabled = true;
-      rtPost('teacher-applications', _payload).then(function () {
+      rtPut('teacher-applications', _payload.appId, _payload).then(function () {
         showSuccess(false);
         window.siteToast && window.siteToast('আবেদন সার্ভারে জমা হয়েছে · Submitted');
       }).catch(function () {
@@ -201,5 +206,6 @@
     });
 
     initPhoto();
+    if (typeof rtArmForm === 'function') rtArmForm('tchForm');
   });
 })();

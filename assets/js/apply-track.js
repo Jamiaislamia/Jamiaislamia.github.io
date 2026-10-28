@@ -47,17 +47,17 @@
         return;
       }
       var kind = id.indexOf('TCH-') === 0 ? 'teacher' : 'student';
-      var node = kind === 'teacher' ? 'teacher-applications' : 'admissions';
-      var other = kind === 'teacher' ? 'admissions' : 'teacher-applications';
 
       btn.disabled = true;
       out.innerHTML = '<div class="panel"><p style="color:var(--muted)">' + T('অনুসন্ধান করা হচ্ছে… · Searching…') + '</p></div>';
-      rtFind(node, id).then(function (rec) {
-        if (rec) { out.innerHTML = rtStatusPanel(rec, kind); return; }
-        return rtFind(other, id).then(function (rec2) {
-          if (rec2) { out.innerHTML = rtStatusPanel(rec2, kind === 'teacher' ? 'student' : 'teacher'); return; }
-          out.innerHTML = notFoundPanel();
-        });
+      /* Both node types are privacy-locked and keyed by their own id, so a
+         lookup is always ONE direct read: no bulk scan of the node. */
+      var lookup = kind === 'teacher'
+        ? rtGetKey('teacher-applications', id)
+        : rtGetKey('admissions', id);
+      lookup.then(function (rec) {
+        if (!rec) { out.innerHTML = notFoundPanel(); return; }
+        out.innerHTML = rtStatusPanel(rec, kind);
       }).catch(function () { out.innerHTML = offlinePanel(); })
         .then(function () { btn.disabled = false; });
     }
