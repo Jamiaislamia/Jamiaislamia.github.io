@@ -1,0 +1,53 @@
+{
+  "_readme": [
+    "\"Where we are different\" — the two-column list of reasons on the home page.",
+    "HOW TO UPDATE: edit the \"items\" list below (one object per reason) and save/commit the file.",
+    "  icon    - which line icon to draw: book | people | award | chart | shield | message",
+    "            (an unknown name falls back to the book, so a typo never leaves an empty circle)",
+    "  title   - short heading in Bangla, required",
+    "  titleEn - the same heading in English (used for the tooltip / accessibility only)",
+    "  desc    - one or two sentences in Bangla",
+    "The page splits the list into two equal columns automatically — the first half fills the",
+    "left column — so the order below IS the reading order. Six items (three per column) reads best.",
+    "ACCESS: only someone with access to this file (the repository) can change the list.",
+    "The published website is read-only: it only ever sends GET requests and renders every value as escaped text."
+  ],
+  "items": [
+    {
+      "icon": "book",
+      "title": "দ্বীনি ও আধুনিক শিক্ষার সমন্বয়",
+      "titleEn": "Deen and modern learning together",
+      "desc": "কুরআন-সুন্নাহর আলোকে দ্বীনি শিক্ষার পাশাপাশি NCTB ও মাদ্রাসা শিক্ষা বোর্ড, ঢাকার পাঠক্রম অনুসরণ করা হয় — যাতে শিক্ষার্থী দ্বীন ও দুনিয়া দুই দিকেই প্রস্তুত হয়।"
+    },
+    {
+      "icon": "people",
+      "title": "ছোট ক্লাসে ব্যক্তিগত যত্ন",
+      "titleEn": "Small classes, personal care",
+      "desc": "প্রতিটি শ্রেণিতে সীমিত সংখ্যক শিক্ষার্থী রাখা হয়, তাই প্রত্যেকের পড়াশোনার অগ্রগতি আলাদাভাবে দেখার ও দুর্বলতা ধরার সুযোগ থাকে।"
+    },
+    {
+      "icon": "award",
+      "title": "যোগ্য ও অভিজ্ঞ শিক্ষক",
+      "titleEn": "Qualified, experienced teachers",
+      "desc": "দীর্ঘ অভিজ্ঞতাসম্পন্ন শিক্ষকমণ্ডলী প্রতিটি বিষয় মনোযোগ দিয়ে পড়ান এবং নিয়মিত মূল্যায়নের মাধ্যমে শিক্ষার্থীর অবস্থান স্পষ্ট করেন।"
+    },
+    {
+      "icon": "chart",
+      "title": "ফলাফলের স্বচ্ছ হিসাব",
+      "titleEn": "Transparent results",
+      "desc": "প্রতি পরীক্ষার ফলাফল ও অগ্রগতি অভিভাবকের কাছে স্পষ্টভাবে জানানো হয় — ভালো-মন্দ কোনো বিষয়ই গোপন রাখা হয় না।"
+    },
+    {
+      "icon": "shield",
+      "title": "নিরাপদ ও পরিচ্ছন্ন পরিবেশ",
+      "titleEn": "Safe and clean campus",
+      "desc": "নিরাপত্তা ব্যবস্থা, নিয়মিত পরিচ্ছন্নতা এবং সময়মতো নামাজ ও খাবারের ব্যবস্থায় শিক্ষার্থীর প্রতিদিন সুশৃঙ্খল থাকে।"
+    },
+    {
+      "icon": "message",
+      "title": "অভিভাবকের সাথে নিয়মিত যোগাযোগ",
+      "titleEn": "Regular contact with guardians",
+      "desc": "মাসিক অভিভাবক সভা ও ফোনে যোগাযোগের মাধ্যমে যেকোনো বিষয় সময়মতো জানানো ও সমাধান করা হয়।"
+    }
+  ]
+}

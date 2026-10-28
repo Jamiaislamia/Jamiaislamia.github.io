@@ -6,6 +6,7 @@
     ['index.html', 'হোম', 'Home'],
     ['index.html#about', 'পরিচিতি', 'About'],
     ['index.html#streams', 'শাখা', 'Streams'],
+    ['index.html#different', 'ব্যতিক্রম', 'Why us'],
     ['teachers.html', 'শিক্ষক', 'Teachers'],
     ['index.html#campus', 'ক্যাম্পাস', 'Campus'],
     ['index.html#culture', 'সংস্কৃতি', 'Culture'],
@@ -114,6 +115,7 @@
         ['index.html#about', 'পরিচিতি'],
         ['index.html#history', 'পথচলা'],
         ['index.html#streams', 'শাখা'],
+        ['index.html#different', 'ব্যতিক্রম'],
         ['index.html#campus', 'ক্যাম্পাস'],
         ['index.html#culture', 'সংস্কৃতি']
       ]],

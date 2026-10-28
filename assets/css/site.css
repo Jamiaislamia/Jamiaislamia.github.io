@@ -575,6 +575,38 @@ code{font-family:var(--font-mono); font-size:.9em; background:var(--surface2); p
    deleted side rails and left every card 152px short of the section header */
 .hist-feed{max-width:none}
 
+/* ── Why we are different — TWO COLUMNS of reasons ────────────
+   Each column is a vertical timeline: a round node carrying a line icon, joined
+   by a hairline down to the next node, with the heading and the note beside it.
+   Both columns are the same width, so the two rails read as one list. */
+.why-grid{
+  display:grid; grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px 88px; align-items:start;
+}
+.why-col{display:flex; flex-direction:column}
+.why-item{
+  position:relative; display:grid; grid-template-columns:44px minmax(0,1fr);
+  gap:6px 18px; padding-bottom:30px;
+}
+.why-item:last-child{padding-bottom:0}
+/* the connector runs from this node's bottom edge down to the next node's top,
+   and stops at the last one */
+.why-item:not(:last-child)::before{
+  content:""; position:absolute; left:21.5px; top:44px; bottom:0; width:1px;
+  background:var(--border2);
+}
+.why-node{
+  position:relative; z-index:1;
+  width:44px; height:44px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--gold); background:var(--surface2); border:1px solid var(--border2);
+  transition:color 200ms var(--ease), border-color 200ms var(--ease), background 200ms var(--ease);
+}
+.why-node svg{width:20px; height:20px}
+.why-item:hover .why-node{color:var(--gold-bright); border-color:var(--gold-edge); background:var(--gold-t)}
+.why-title{font-family:var(--font-head); font-size:16px; color:var(--text); margin-bottom:6px}
+.why-desc{font-size:13px; color:var(--muted); line-height:1.8; max-width:46ch}
+
 /* ── Departments ────────────────────────────────────── */
 .depts{display:flex; flex-wrap:wrap; gap:9px; margin-bottom:20px}
 
@@ -960,6 +992,7 @@ select{appearance:none; background-image:linear-gradient(45deg,transparent 50%,v
   .sec-rule{min-width:100%}
   .grid-streams,.grid-values,.gallery,.photo-grid{grid-template-columns:repeat(2,1fr)}
   .stream-grid{grid-template-columns:1fr}
+  .why-grid{grid-template-columns:1fr; gap:0}
   .footer-nav{grid-template-columns:1fr 1fr; gap:16px 20px}
   /* the mosaic goes uniform at 2-up: six photos = three full rows */
   .gal--feature{grid-column:auto; grid-row:auto}
