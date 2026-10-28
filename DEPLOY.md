@@ -12,6 +12,7 @@ website-upload/
 ├── apply-student.html    built-in student form   (fallback, unlinked)
 ├── apply-teacher.html    built-in teacher form   (fallback, unlinked)
 ├── history.json          the timeline entries    ← edit this to change the timeline
+├── different.json        the "why we are different" reasons  ← edit this to change the list
 ├── teachers.json         the faculty list        ← edit this to change teachers
 ├── photos.json           album → photo mapping   ← edit this to change the gallery
 ├── assets/
@@ -116,6 +117,7 @@ Everything that changes regularly is a **data file** — no HTML editing needed:
 |---|---|
 | teachers / their photos / subjects | `teachers.json` |
 | history milestones | `history.json` |
+| the "why we are different" reasons (two columns of six) | `different.json` |
 | gallery albums | `photos.json` (and drop the images into `Photos/<Album>/`) |
 | application form URLs, Maps link, social links | `assets/js/site-links.js` |
 
