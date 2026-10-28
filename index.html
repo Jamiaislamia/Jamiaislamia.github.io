@@ -109,14 +109,15 @@
       <span class="hist-total" id="historyTotal"></span>
     </div>
 
-    <!-- the heritage band: one node + year pill per milestone, joined by arrows -->
-    <div class="hist-band rv">
-      <nav class="hist-rail" id="historyYears" aria-label="Milestone years"></nav>
-      <button class="hist-more" type="button" id="chainToggle" aria-expanded="false" hidden></button>
-    </div>
-
+    <!-- the heritage rail: one column per milestone — the node (year pill +
+         numbered circle) on one side of the line and the story on the other,
+         alternating, with an arrow into the next segment (rendered by history.js) -->
     <div class="hist-feed" id="historyTimeline" aria-live="polite">
       <p style="color:var(--muted)">ধারাবাহিকতা লোড হচ্ছে…</p>
+    </div>
+
+    <div class="hist-foot rv">
+      <button class="hist-more" type="button" id="chainToggle" aria-expanded="false" hidden></button>
     </div>
   </section>
 
