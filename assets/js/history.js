@@ -8,6 +8,9 @@
    milestone, the node (year pill + numbered circle) above the line and the story
    below, alternating down the line, with an arrow into the next segment. The
    columns are cells of one grid, so every rail segment sits on the same line.
+   The whole line is always rendered; a round arrow at each end walks it one
+   column at a time, the frame opens on the latest milestone, and the edges fade
+   so a half-visible column reads as the previous / next step.
    Language law: the year chip and the English tag chip are the only chrome;
    the title and note are Bangla, and `descEn` supplies ONE short result-first
    English line (never a translated paragraph).
@@ -103,12 +106,6 @@
     return out;
   }
 
-  /* How many milestones show before the "Show all" toggle */
-  var CHAIN_LIMIT = 4;
-  var chainExpanded = false;
-  var activeTag = '';            /* '' = every milestone */
-  var lastData = null;
-
   function T(s) { return window.siteT ? window.siteT(s) : s; }
   function yearOf(e) { return String(e.year == null ? '' : e.year).trim(); }
   function isYear(y) { return /^\d{4}$/.test(y); }
@@ -125,41 +122,72 @@
     return bn(('0' + n).slice(-2));
   }
 
-  /* Filter chips above the rail — one per tag the data actually uses, plus
-     "all". Bangla label, count at the right, pressed chip keeps the gold. */
-  function renderFilters(entries) {
-    var box = el('historyFilters');
-    if (!box) return;
-    var counts = {}, ens = {}, order = [];
-    entries.forEach(function (e) {
-      var t = e.tag || '';
-      if (!t) return;
-      if (!counts[t]) { counts[t] = 0; ens[t] = enOf(e, 'tag'); order.push(t); }
-      counts[t]++;
-    });
-    if (!order.length) { box.innerHTML = ''; return; }
-    /* The count is decoration for the eye: it sits behind a hairline so it
-       cannot be mistaken for a dropdown caret, and it is kept out of the
-       button's accessible name (aria-label carries it) so "সব৭" is never read
-       aloud as one word. */
-    var html = '<button class="hist-filter" type="button" data-tag="" aria-pressed="' +
-      (activeTag === '' ? 'true' : 'false') + '" aria-label="' + esc('সব · ' + bn(entries.length) + 'টি মাইলফলক') +
-      '" title="All milestones"><span>' +
-      esc('সব') + '</span><b aria-hidden="true">' + esc(bn(entries.length)) + '</b></button>';
-    order.forEach(function (t) {
-      html += '<button class="hist-filter" type="button" data-tag="' + esc(t) + '" aria-pressed="' +
-        (activeTag === t ? 'true' : 'false') + '" aria-label="' + esc(t + ' · ' + bn(counts[t]) + 'টি') +
-        '" title="' + esc(ens[t] || t) + '"><span>' +
-        esc(t) + '</span><b aria-hidden="true">' + esc(bn(counts[t])) + '</b></button>';
-    });
-    box.innerHTML = html;
-    Array.prototype.forEach.call(box.querySelectorAll('.hist-filter'), function (b) {
-      b.addEventListener('click', function () {
-        activeTag = b.getAttribute('data-tag') || '';
-        chainExpanded = false;
-        renderChain(lastData);
-      });
-    });
+  /* ── the rail's two arrows ──────────────────────────────
+     Inline SVG only (blueprint 10.1) — a chevron, never a glyph. */
+  var CHEVRON_PREV = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
+    'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg>';
+  var CHEVRON_NEXT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
+    'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>';
+
+  function scroller() { return host ? host.querySelector('.hist-scroll') : null; }
+  function navBtn(dir) { return host ? host.querySelector('.hist-nav--' + dir) : null; }
+  function reduced() {
+    return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  }
+  /* One column's width — the unit the arrows step by. */
+  function columnWidth() {
+    var cell = host ? host.querySelector('.hist-rail-cell') : null;
+    return cell ? cell.getBoundingClientRect().width : 0;
+  }
+  /* iOS-style glide: a single ease-out over ~520ms, never linear — and an
+     instant jump when the reader has asked for reduced motion. */
+  function glide(el, to) {
+    var max = Math.max(0, el.scrollWidth - el.clientWidth);
+    to = Math.max(0, Math.min(max, to));
+    if (reduced() || !window.requestAnimationFrame) { el.scrollLeft = to; syncNav(); return; }
+    var from = el.scrollLeft, start = 0, DUR = 520;
+    function ease(t) { return 1 - Math.pow(1 - t, 5); }
+    function frame(now) {
+      if (!start) start = now;
+      var p = Math.min(1, (now - start) / DUR);
+      el.scrollLeft = from + (to - from) * ease(p);
+      if (p < 1) window.requestAnimationFrame(frame);
+      else { el.scrollLeft = to; syncNav(); }
+    }
+    window.requestAnimationFrame(frame);
+  }
+  /* Which end of the line are we on? Drives the edge fades and the arrows. */
+  function syncNav() {
+    var el = scroller();
+    if (!el) return;
+    var max = Math.max(0, el.scrollWidth - el.clientWidth);
+    var atStart = el.scrollLeft <= 1, atEnd = el.scrollLeft >= max - 1;
+    el.classList.toggle('is-start', atStart);
+    el.classList.toggle('is-end', atEnd);
+    var p = navBtn('prev'), n = navBtn('next');
+    if (p) p.setAttribute('aria-disabled', atStart ? 'true' : 'false');
+    if (n) n.setAttribute('aria-disabled', atEnd ? 'true' : 'false');
+  }
+  function wireNav() {
+    var el = scroller();
+    if (!el) return;
+    var p = navBtn('prev'), n = navBtn('next');
+    function step(dir) {
+      var w = columnWidth();
+      if (w) glide(el, el.scrollLeft + dir * w);
+    }
+    if (p) p.addEventListener('click', function () { step(-1); });
+    if (n) n.addEventListener('click', function () { step(1); });
+    el.addEventListener('scroll', syncNav, { passive: true });
+    window.addEventListener('resize', syncNav);
+  }
+  /* The rail is chronological, so the LATEST milestones are at the far end —
+     that is where the frame opens. */
+  function showLatest(instant) {
+    var el = scroller();
+    if (!el) return;
+    var to = Math.max(0, el.scrollWidth - el.clientWidth);
+    if (instant) { el.scrollLeft = to; syncNav(); } else glide(el, to);
   }
 
   /* The year pills ARE the nav: each one sits on the stem of its own column, so
@@ -172,31 +200,29 @@
       });
     });
   }
-  /* the step is a display:contents wrapper (it owns the grid cells), so scroll
-     its first real box instead of the wrapper itself */
+  /* the step is a display:contents wrapper (it owns the grid cells), so measure
+     its first real box; the jump glides, landing the column centred */
   function jumpTo(i) {
     var step = document.getElementById('milestone-' + i);
-    if (!step) return;
+    var el = scroller();
+    if (!step || !el) return;
     var box = step.getBoundingClientRect().height ? step : step.firstElementChild;
-    if (box && box.scrollIntoView) box.scrollIntoView({ block: 'nearest', inline: 'center' });
+    if (!box) return;
+    var colW = box.getBoundingClientRect().width;
+    var delta = box.getBoundingClientRect().left - el.getBoundingClientRect().left;
+    glide(el, el.scrollLeft + delta - (el.clientWidth - colW) / 2);
   }
 
-  /* The section's ONE English orientation line + the count label — both read
-     from the data, so an 8th milestone can never make the copy lie. */
+  /* The section's ONE English orientation line — read from the data, so an 8th
+     milestone can never make the copy lie. */
   function renderSummary(entries) {
     var en = el('historyCount');
-    var total = el('historyTotal');
-    if (!en && !total) return;
-    if (!entries.length) {
-      if (en) en.textContent = '';
-      if (total) total.textContent = '';
-      return;
-    }
+    if (!en) return;
+    if (!entries.length) { en.textContent = ''; return; }
     var first = yearNumber(entries[0].year);
     var last = yearNumber(entries[entries.length - 1].year);
-    if (en) en.textContent = entries.length + ' milestones · ' + first + ' → ' + last +
-      ' — the rail below jumps to any year.';
-    if (total) total.textContent = bn(entries.length) + 'টি মাইলফলক';
+    en.textContent = entries.length + ' milestones · ' + first + ' → ' + last +
+      ' — use the arrows to walk the line.';
   }
 
   /* The pill of the column nearest the top of the viewport carries the gold
@@ -230,66 +256,35 @@
   }
 
 
-  /* The show-more control closes the band — it belongs to the timeline it
-     reveals, not to the filter toolbar. */
-  function renderToggle(total) {
-    var btn = el('chainToggle');
-    if (!btn) return;
-    if (total <= CHAIN_LIMIT) {
-      btn.hidden = true;
-      btn.textContent = '';
-      btn.onclick = null;
-      return;
-    }
-    btn.hidden = false;
-    btn.setAttribute('aria-expanded', chainExpanded ? 'true' : 'false');
-    btn.textContent = chainExpanded
-      ? T('কম দেখুন · Show less') + ' ▲'
-      : T('সব দেখুন · Show all') + ' ▼';
-    btn.onclick = function () { chainExpanded = !chainExpanded; renderChain(lastData); };
-  }
-
-  /* nothing to show → clear the toolbar too */
+  /* nothing to show → clear the summary line too */
   function clearPanels() {
-    var filters = el('historyFilters');
-    if (filters) filters.innerHTML = '';
-    var total = el('historyTotal');
-    if (total) total.textContent = '';
     var count = el('historyCount');
     if (count) count.textContent = '';
-    var toggle = el('chainToggle');
-    if (toggle) { toggle.hidden = true; toggle.textContent = ''; toggle.onclick = null; }
     if (spy) { spy.disconnect(); spy = null; }
   }
 
   function renderChain(data) {
     var entries = (data && data.entries) || [];
     if (!entries.length) { renderEmpty(); return; }
-    lastData = data;
     entries = sortEntries(entries, data.sort || 'newest-first');
 
-    renderFilters(entries);
-
-    var filtered = activeTag
-      ? entries.filter(function (e) { return (e.tag || '') === activeTag; })
-      : entries;
-
-    /* keep the stepper short: 4 milestones, the rest behind a toggle */
-    var collapsed = !chainExpanded && filtered.length > CHAIN_LIMIT;
-    var shown = collapsed ? filtered.slice(0, CHAIN_LIMIT) : filtered;
-
-    /* The infographic rail: one column per milestone. The node (year pill +
-       numbered circle) sits on one side of the horizontal rail and the story on
-       the other, alternating down the line, with an arrow into the next segment.
-       The step number runs with the calendar — ০১ at the founding year. */
-    var html = '<div class="hist-scroll"><nav class="hist-strip" aria-label="Milestone years">';
-    shown.forEach(function (e, n) {
-      var i = entries.indexOf(e);
+    /* The infographic rail: EVERY milestone is on the line at once — one column
+       each. The node (year pill + numbered circle) sits on one side and the
+       story on the other, alternating down the line, with an arrow into the next
+       segment. The step number runs with the calendar — ০১ at the founding year.
+       The two round buttons walk the line; the edge fade shows what is coming
+       and what has just gone. */
+    var html = '<div class="hist-band">' +
+      '<button class="hist-nav hist-nav--prev" type="button" aria-disabled="true" aria-label="' +
+        esc('আগের মাইলফলক · Previous milestone') + '">' + CHEVRON_PREV + '</button>' +
+      '<div class="hist-scroll"><nav class="hist-strip" aria-label="' +
+        esc('Milestone years') + '">';
+    entries.forEach(function (e, i) {
       var year = yearOf(e);
       var te = enOf(e, 'tag') || e.tag;   /* chip label: English, Bangla fallback */
       var de = enOf(e, 'desc');
       var isNow = i === entries.length - 1;   /* chronological: today is the last step */
-      var nodeUp = (n % 2 === 0);             /* alternate: node above, then below */
+      var nodeUp = (i % 2 === 0);             /* alternate: node above, then below */
       var node =
         '<a class="hist-node' + (isNow ? ' hist-node--now' : '') + '" href="#milestone-' + i +
           '" data-i="' + i + '" title="' + esc(e.title || '') + '">' +
@@ -319,14 +314,18 @@
           '</div>' +
         '</div>';
     });
-    html += '</nav></div>';
+    html += '</nav></div>' +
+      '<button class="hist-nav hist-nav--next" type="button" aria-label="' +
+        esc('পরের মাইলফলক · Next milestone') + '">' + CHEVRON_NEXT + '</button>' +
+      '</div>';
     html += '<p class="chain-note">' + esc(T('প্রতি বছর নতুন অর্জন এই ধারায় যোগ করা হয় · This timeline is updated every year.')) + '</p>';
     host.innerHTML = html;
 
     wireNodes();
+    wireNav();
     initSpy();
-    renderToggle(filtered.length);
     renderSummary(entries);
+    showLatest(true);   /* open on the latest milestones */
   }
 
   function renderEmpty() {
@@ -353,6 +352,9 @@
     loadHistory().then(function (data) {
       if (!data) { renderUnavailable(); return; }
       renderChain(data);
+      /* fonts and lazy images settle after the first paint — re-assert the frame
+         and the edge fades once the page has fully loaded */
+      window.addEventListener('load', function () { showLatest(true); });
       if (window.__siteReveal) window.__siteReveal();
     });
   });

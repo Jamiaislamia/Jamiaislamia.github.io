@@ -434,38 +434,49 @@ code{font-family:var(--font-mono); font-size:.9em; background:var(--surface2); p
    node (year pill + numbered circle) sits above the line and the story below,
    or the other way round — alternating down the line — with an arrow into the
    next segment. The columns are cells of ONE grid, so every segment lands on
-   the same line however long a story is. */
-.hist-toolbar{
-  display:flex; align-items:center; justify-content:space-between;
-  gap:12px; flex-wrap:wrap; margin-bottom:14px;
-}
-.hist-filters{display:flex; flex-wrap:wrap; gap:6px}
-.hist-filter{
-  position:relative; display:inline-flex; align-items:baseline;
-  font-family:var(--font-mono); font-size:10px; letter-spacing:.08em; text-transform:uppercase;
-  color:var(--muted); background:transparent; border:1px solid var(--border);
-  border-radius:4px; padding:6px 10px; cursor:pointer;
-  transition:background 150ms var(--ease), border-color 150ms var(--ease), color 150ms var(--ease);
-}
-/* the count reads as a count, not as a dropdown caret: behind a hairline,
-   dimmed, and aria-hidden so the button's name stays just the label */
-.hist-filter b{
-  font-weight:500; color:var(--muted2); margin-left:8px; padding-left:8px;
-  border-left:1px solid var(--border);
-}
-.hist-filter:hover{background:var(--surface2); color:var(--text)}
-.hist-filter[aria-pressed="true"]{background:var(--gold-t); border-color:var(--gold-edge); color:var(--gold)}
-.hist-filter[aria-pressed="true"] b{color:var(--gold); border-color:var(--gold-edge)}
-.hist-total{
-  font-family:var(--font-mono); font-size:9.5px; letter-spacing:.14em;
-  text-transform:uppercase; color:var(--muted2);
-}
-
+   the same line however long a story is. Two round arrows walk the line and the
+   edges fade, so a half-visible column reads as the previous / next step. */
 /* the rail — the line the nodes sit on, drawn segment by segment */
-.hist-scroll{overflow-x:auto; overflow-y:hidden; padding:2px 0 8px; scroll-snap-type:x proximity}
+/* the two round arrows walk the line, one column at a time */
+.hist-band{display:flex; align-items:center; gap:12px}
+.hist-nav{
+  flex:0 0 auto; width:38px; height:38px; border-radius:50%; padding:0;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--muted); background:var(--surface); border:1px solid var(--border2);
+  cursor:pointer;
+  transition:color 180ms var(--ease), border-color 180ms var(--ease), background 180ms var(--ease);
+}
+.hist-nav svg{width:17px; height:17px}
+.hist-nav:hover{color:var(--gold); border-color:var(--gold-edge); background:var(--gold-t)}
+.hist-nav[aria-disabled="true"]{opacity:.3; cursor:default; color:var(--muted2); border-color:var(--border)}
+.hist-nav[aria-disabled="true"]:hover{color:var(--muted2); border-color:var(--border); background:var(--surface)}
+/* the line scrolls sideways; the native bar is hidden because the arrows and the
+   edge fade carry the affordance, and the fade is what stops a half column from
+   reading as cut off — it reads as the previous / next step instead */
+.hist-scroll{
+  flex:1 1 auto; min-width:0;
+  overflow-x:auto; overflow-y:hidden; padding:4px 0;
+  scrollbar-width:none; -ms-overflow-style:none;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 78px,#000 calc(100% - 78px),transparent 100%);
+  mask-image:linear-gradient(90deg,transparent 0,#000 78px,#000 calc(100% - 78px),transparent 100%);
+}
+.hist-scroll::-webkit-scrollbar{display:none}
+/* at either end the matching fade is dropped, so the first and last step are
+   never dimmed by a fade with nothing behind it */
+.hist-scroll.is-start{
+  -webkit-mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 78px),transparent 100%);
+  mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 78px),transparent 100%);
+}
+.hist-scroll.is-end{
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 78px,#000 100%);
+  mask-image:linear-gradient(90deg,transparent 0,#000 78px,#000 100%);
+}
+.hist-scroll.is-start.is-end{-webkit-mask-image:none; mask-image:none}
 .hist-strip{
   display:grid; grid-auto-flow:column;
-  grid-template-rows:auto 30px auto;
+  /* the outer rows are equal, so the rail sits exactly on the strip's centre
+     line — that is what lets the two arrows sit on the rail itself */
+  grid-template-rows:minmax(0,1fr) 30px minmax(0,1fr);
   grid-auto-columns:minmax(228px,1fr);
 }
 /* the step owns three grid cells (node side · rail · story side) but stays ONE
@@ -473,7 +484,7 @@ code{font-family:var(--font-mono); font-size:.9em; background:var(--surface2); p
 .stepper-step{display:contents}
 .hist-cell{
   display:flex; flex-direction:column; align-items:center; text-align:center;
-  padding:0 14px; scroll-snap-align:center;
+  padding:0 14px;
 }
 .hist-up{justify-content:flex-end}
 .hist-down{justify-content:flex-start}
@@ -560,7 +571,6 @@ code{font-family:var(--font-mono); font-size:.9em; background:var(--surface2); p
   font-size:9.5px; letter-spacing:.09em; text-transform:uppercase; color:var(--muted2);
 }
 
-.hist-foot{display:flex; justify-content:center; margin-top:16px}
 /* the feed is as wide as the section — the old 880px cap was the ghost of the
    deleted side rails and left every card 152px short of the section header */
 .hist-feed{max-width:none}
@@ -914,13 +924,17 @@ select{appearance:none; background-image:linear-gradient(45deg,transparent 50%,v
   .sec-title{font-size:24px}
   .section{padding:56px 0 8px}
   .fgrid{grid-template-columns:1fr}
-  .hist-toolbar{margin-bottom:12px}
   .contact-ledger{grid-template-columns:1fr}
   .contact-col{padding:16px 20px; border-left:0; border-top:1px solid var(--border)}
   .contact-col:first-child{padding-top:20px; border-top:0}
+  .hist-band{display:block}
+  .hist-nav{display:none}
   /* below 900px the rail turns upright: the node row leads each milestone and
      the story follows under it, so nothing is squeezed into a 228px column */
-  .hist-scroll{overflow:visible; padding:0}
+  .hist-scroll{
+    overflow:visible; padding:0;
+    -webkit-mask-image:none; mask-image:none;
+  }
   .hist-strip{
     grid-auto-flow:row; grid-auto-columns:auto;
     grid-template-columns:1fr; grid-template-rows:auto;
