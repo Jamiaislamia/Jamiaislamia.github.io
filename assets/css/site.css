@@ -41,9 +41,6 @@
   --gold-deep:#a9873d;
   --gold-t:rgba(216,180,94,.10);
   --gold-edge:rgba(216,180,94,.30);
-  /* the same gold at zero alpha — the only stop a transparent gradient end
-     needs. Kept as a token so no rule ever has to write a raw colour. */
-  --gold-0:rgba(216,180,94,0);
   /* ── semantic status (only ever on status tags / messages) ── */
   --teal:#4fd6a5;    --teal-bg:rgba(79,214,165,.10);    --teal-edge:rgba(79,214,165,.30);
   --amber:#f2be5c;   --amber-bg:rgba(242,190,92,.10);   --amber-edge:rgba(242,190,92,.30);
@@ -159,8 +156,54 @@ code{font-family:var(--font-mono); font-size:.9em; background:var(--surface2); p
   height:34px; width:auto; max-width:42px; object-fit:contain; flex-shrink:0;
   background:var(--surface2); border:1px solid var(--gold-edge); border-radius:6px; padding:3px;
 }
-.brand-name{font-family:var(--font-head); font-size:17px; color:var(--text); white-space:nowrap; line-height:1.2}
-.brand-sub{display:block; font-family:var(--font-mono); font-size:8.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted2); margin-top:3px}
+/* ── Ribbon brand — the wordmark unfolds and folds back on its own ────────
+   The logo-reveal idea, brought to the masthead, where the identity is
+   actually read. Nothing about it is hover-gated: the Bangla name and the
+   Latin line beneath it open slowly, hold readable for the longest part of the
+   cycle, fold back behind the emblem, and start again. The emblem itself never
+   moves, so the bar keeps its anchor at every moment of the loop.
+   The fold is a clip on the text (max-width + overflow), not the text sliding
+   away under the nav — the bar genuinely shortens to the emblem, while
+   everything to its right (nav, Apply, menu) is pinned right and cannot jump.
+   --brand-open must be at least the rendered width of the name or the last
+   letter stays clipped. It is set from measurement, not taste: _probe_brand.js
+   reports the rendered name width at every breakpoint and fails the check if
+   nameWidth > --brand-open. And because the open state IS the natural width,
+   the loop can never make the bar wider than the static header it replaces —
+   so no breakpoint can overflow by animating. */
+.brand-name{
+  font-family:var(--font-head); font-size:17px; color:var(--text);
+  white-space:nowrap;
+  /* 1.35, not 1.2 — the name now clips itself, and Bangla matras sit above the
+     Latin em box, so 1.2 shaved their tops off */
+  line-height:1.35;
+  --brand-open:182px;
+  max-width:var(--brand-open); overflow:hidden;
+  /* a flex item's automatic minimum is its min-content width, which would win
+     over max-width and stop the fold dead — so it has to be released */
+  min-width:0;
+  animation:brand-unfold 12s var(--ease) infinite;
+}
+.brand-sub{
+  display:block; font-family:var(--font-mono); font-size:8.5px; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--muted2); margin-top:3px;
+  animation:brand-sub-in 12s var(--ease) infinite;
+}
+/* One slow 12s cycle: folded at the turn of the loop, a 2.2s unfold, six
+   seconds readable, a 2.4s fold. Slow on purpose — this is a masthead, not a
+   banner. Each segment runs on the site's --ease, never a linear ramp. */
+@keyframes brand-unfold{
+  0%,  6%{max-width:0;                 opacity:0; animation-timing-function:var(--ease)}
+  24%, 74%{max-width:var(--brand-open); opacity:1; animation-timing-function:var(--ease)}
+  94%,100%{max-width:0;                 opacity:0; animation-timing-function:var(--ease)}
+}
+/* the Latin line arrives a beat after the name, so the two never travel as one
+   block — the same stagger the card had */
+@keyframes brand-sub-in{
+  0%, 12%{opacity:0; transform:translateX(-6px); animation-timing-function:var(--ease)}
+  30%, 74%{opacity:1; transform:none;             animation-timing-function:var(--ease)}
+  92%,100%{opacity:0; transform:translateX(-6px); animation-timing-function:var(--ease)}
+}
 .nav{margin-left:auto; display:flex; align-items:center; gap:2px}
 .nav a{
   /* every nav row is a 44px target — one rule, exact, whatever the font
@@ -307,115 +350,10 @@ code{font-family:var(--font-mono); font-size:.9em; background:var(--surface2); p
 .hero-basmala::after{background:linear-gradient(to left, var(--gold-edge), transparent)}
 
 .hero-in{position:relative; text-align:center; padding:62px 24px 68px; max-width:800px; margin:0 auto}
-/* ── Hero brand card — the logo-reveal animation, retuned to this site ────
-   Ported from the Uiverse "logo card" by Smit-Prajapati. The MOTION is the
-   same: the frame rotates from 10° and settles inset, the card squares up and
-   lifts, a gold trail sweeps once across the emblem, the English wordmark
-   slides out of it, and the name beneath opens its letter-spacing.
-   What is deliberately different, and why:
-     · colours → the site tokens (--surface2 / --gold / --gold-edge / --gold-t /
-       --gold-0), never the snippet's own slate and bronze (RULE 1: no raw
-       colour in a rule, and none is left)
-     · the snippet's animate-every-property transition → enumerated properties
-       (Part 10.3 forbids the shorthand; the site now has none at all)
-     · 0.5s / 1s `ease-in-out` → 380ms and 520ms on the site's --ease (Part 1
-       motion law; 520ms is the duration the milestone rail already glides at)
-     · `scale(1.1)` → `scale(1.06)`, so the growth stays inside the hero's
-       26px bottom margin instead of touching the H1
-     · `:hover` alone → `:hover` / `:focus-within`, plus a `(hover:none)` and a
-       `prefers-reduced-motion` branch that hold the card OPEN, so a phone and a
-       motion-sensitive reader get the full lockup rather than nothing
-   Every line inside is aria-hidden: the H1, the tagline and the hero note
-   already state the identity, so this is decoration and hides no information
-   behind hover. */
-.brandcard{
-  /* --bc-open is the width the reveal opens to: it must clear the emblem plus
-     the wordmark. Declared once here and overridden once at ≤900px, so the
-     wordmark stays centred in the frame at both sizes. */
-  --bc-open:284px;
-  position:relative; width:360px; max-width:100%; height:248px;
-  margin:0 auto 26px;
-  display:grid; place-content:center;
-  background:var(--surface2); border-radius:var(--r-card); overflow:hidden;
-  transition:border-radius 380ms var(--ease), transform 380ms var(--ease);
-}
-.brandcard-border{
-  position:absolute; inset:0; border:1px solid var(--gold-edge); border-radius:inherit;
-  opacity:0; transform:rotate(10deg); pointer-events:none;
-  transition:inset 380ms var(--ease), opacity 380ms var(--ease),
-             transform 380ms var(--ease), border-radius 380ms var(--ease);
-}
-.brandcard-logo{
-  /* the rest width IS the emblem's own rendered width (the asset is 2:3), so at
-     rest the card shows the emblem and nothing else — that is the reveal */
-  position:relative; height:88px; width:59px; margin:0 auto; overflow:hidden;
-  transition:width 520ms var(--ease);
-}
-.brandcard-mark{position:absolute; left:0; top:0; height:88px; display:flex; align-items:center}
-.brandcard-mark img{height:88px; width:auto; max-width:59px; object-fit:contain}
-.brandcard-word{
-  position:absolute; left:71px; top:0; height:88px; display:flex; align-items:center;
-  font-family:var(--font-mono); font-size:12px; letter-spacing:.18em;
-  text-transform:uppercase; white-space:nowrap; color:var(--gold);
-}
-.brandcard-trail{position:absolute; right:0; top:0; height:100%; width:100%; opacity:0; pointer-events:none}
-.brandcard-name{
-  /* positioned from the TOP of the card — never with translateY(-50%) — so the
-     gap under the emblem is exact and does not depend on the name's own height */
-  position:absolute; left:50%; top:calc(50% + 56px);
-  transform:translateX(-50%) translateY(8px);
-  font-family:var(--font-head); font-weight:600; font-size:18px; line-height:1.4;
-  white-space:nowrap; color:var(--gold-bright); opacity:0;
-  /* NO letter-spacing here. The snippet animates letter-spacing, which is fine
-     for its Latin wordmark but wrong for Bangla: it is an abugida, so tracking
-     pulls every matra away from the consonant it belongs to and the word stops
-     reading. The two Latin lines carry the tracking reveal instead; the Bangla
-     name rises and fades in. */
-  transition:opacity 380ms var(--ease) 300ms, transform 380ms var(--ease) 300ms;
-}
-.brandcard-foot{
-  position:absolute; left:50%; bottom:16px; transform:translateX(-50%);
-  font-family:var(--font-mono); font-size:8px; text-transform:uppercase;
-  letter-spacing:.5em; padding:0 4px 0 9px; white-space:nowrap;
-  color:var(--gold); background:var(--surface2); opacity:0;
-  transition:letter-spacing 380ms var(--ease), opacity 380ms var(--ease);
-}
-.hero-in .brandcard:hover,
-.hero-in .brandcard:focus-within{border-radius:0; transform:scale(1.06)}
-.hero-in .brandcard:hover .brandcard-border,
-.hero-in .brandcard:focus-within .brandcard-border{inset:15px; opacity:1; transform:rotate(0)}
-.hero-in .brandcard:hover .brandcard-logo,
-.hero-in .brandcard:focus-within .brandcard-logo{
-  width:var(--bc-open); animation:brandcard-scan 520ms var(--ease);
-}
-.hero-in .brandcard:hover .brandcard-trail,
-.hero-in .brandcard:focus-within .brandcard-trail{animation:brandcard-trail 520ms var(--ease)}
-.hero-in .brandcard:hover .brandcard-name,
-.hero-in .brandcard:focus-within .brandcard-name{opacity:1; transform:translateX(-50%) translateY(0)}
-.hero-in .brandcard:hover .brandcard-foot,
-.hero-in .brandcard:focus-within .brandcard-foot{letter-spacing:.22em; opacity:1}
-/* the snippet's 1px edge that flickers on as the wordmark slides out */
-@keyframes brandcard-scan{
-  0%{border-right:1px solid transparent}
-  10%{border-right:1px solid var(--gold)}
-  80%{border-right:1px solid var(--gold)}
-  100%{border-right:1px solid transparent}
-}
-/* the gold trail sweeping across the emblem, once */
-@keyframes brandcard-trail{
-  0%{background:linear-gradient(90deg,var(--gold-0) 90%,var(--gold) 100%); opacity:0}
-  30%{background:linear-gradient(90deg,var(--gold-0) 70%,var(--gold) 100%); opacity:1}
-  70%{background:linear-gradient(90deg,var(--gold-0) 70%,var(--gold) 100%); opacity:1}
-  95%{background:linear-gradient(90deg,var(--gold-0) 90%,var(--gold) 100%); opacity:0}
-}
-/* No hover to give (a phone), or motion that should not run: the card is simply
-   OPEN, so the reveal is never something only a mouse can reach. */
-@media (hover:none),(prefers-reduced-motion:reduce){
-  .brandcard{border-radius:0}
-  .brandcard-border{inset:15px; opacity:1; transform:rotate(0)}
-  .brandcard-logo{width:var(--bc-open)}
-  .brandcard-name{opacity:1; transform:translateX(-50%)}
-  .brandcard-foot{letter-spacing:.22em; opacity:1}
+.hero-logo{
+  height:132px; width:auto; max-width:60%; margin:0 auto 26px; object-fit:contain;
+  background:var(--surface2); border:1px solid var(--gold-edge); border-radius:6px;
+  padding:12px; box-shadow:var(--sh-1);
 }
 .hero h1{font-family:var(--font-head); font-size:52px; line-height:1.14; color:var(--text); margin-bottom:12px}
 .hero h1 .bi-en{margin-top:6px}
@@ -1115,7 +1053,8 @@ select{appearance:none; background-image:linear-gradient(45deg,transparent 50%,v
 
 /* ── Responsive ─────────────────────────────────────── */
 @media (max-width:1280px){
-  .brand-name{font-size:16px}
+  /* the open width travels with the type size — see the ribbon block above */
+  .brand-name{font-size:16px; --brand-open:172px}
   .nav a{padding:0 10px; font-size:13px}
   .header-in{gap:16px}
 }
@@ -1124,6 +1063,12 @@ select{appearance:none; background-image:linear-gradient(45deg,transparent 50%,v
      target instead of the 36px it had at phone width */
   .menu-btn{display:inline-flex; align-items:center; justify-content:center; order:3; min-width:44px; min-height:44px}
   .apply-wrap{order:4; margin-left:auto}
+  /* Below the nav breakpoint the hamburger is ordered immediately after the
+     brand, so a folding wordmark would drag it ~150px across the bar twice a
+     cycle. A control that slides on its own every 12s reads as a glitch, so
+     here the name simply stays open: the loop is a wide-bar gesture. */
+  .brand-name{animation:none; max-width:none; opacity:1}
+  .brand-sub{animation:none; opacity:1; transform:none}
   .nav{
     display:none; position:absolute; top:100%; left:0; right:0;
     flex-direction:column; align-items:stretch; gap:0; margin-left:0;
@@ -1139,14 +1084,7 @@ select{appearance:none; background-image:linear-gradient(45deg,transparent 50%,v
 @media (max-width:900px){
   .hero h1{font-size:38px}
   .hero-in{padding:56px 20px 52px}
-  /* the card steps down a size at ≤900px and its reveal width with it, so the
-     wordmark stays centred instead of sitting in an over-wide frame */
-  .brandcard{--bc-open:248px; height:220px}
-  .brandcard-logo,.brandcard-mark,.brandcard-mark img,.brandcard-word{height:66px}
-  .brandcard-logo{width:44px}
-  .brandcard-mark img{max-width:44px}
-  .brandcard-word{left:56px; font-size:11px}
-  .brandcard-name{font-size:17px; top:calc(50% + 45px)}
+  .hero-logo{height:108px}
   .sec-title{font-size:24px}
   .section{padding:56px 0 8px}
   .fgrid{grid-template-columns:1fr}
@@ -1216,7 +1154,7 @@ select{appearance:none; background-image:linear-gradient(45deg,transparent 50%,v
 }
 @media (max-width:560px){
   .header-in{padding:10px 14px; gap:12px}
-  .brand-name{font-size:15px}
+  .brand-name{font-size:15px; --brand-open:162px}
   .brand-sub{font-size:8px}
   .apply-btn{padding:0 12px; font-size:11px; gap:6px}
   .apply-btn-en,.menu-btn-label{display:none}
@@ -1256,4 +1194,10 @@ select{appearance:none; background-image:linear-gradient(45deg,transparent 50%,v
   .rv{opacity:1; transform:none}
   .sec-rule{transform:none}
   .card:hover{transform:none}
+  /* the ribbon's loop is pure decoration, and an INFINITE animation forced to a
+     .01ms duration would be left frozen on an arbitrary frame — possibly the
+     folded one. So its name is removed outright (a .01ms duration cannot run an
+     animation that has no name) and the wordmark simply stays open. */
+  .brand-name{animation:none; max-width:none; opacity:1}
+  .brand-sub{animation:none; opacity:1; transform:none}
 }
