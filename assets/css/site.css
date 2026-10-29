@@ -41,6 +41,9 @@
   --gold-deep:#a9873d;
   --gold-t:rgba(216,180,94,.10);
   --gold-edge:rgba(216,180,94,.30);
+  /* the same gold at zero alpha — the only stop a transparent gradient end
+     needs. Kept as a token so no rule ever has to write a raw colour. */
+  --gold-0:rgba(216,180,94,0);
   /* ── semantic status (only ever on status tags / messages) ── */
   --teal:#4fd6a5;    --teal-bg:rgba(79,214,165,.10);    --teal-edge:rgba(79,214,165,.30);
   --amber:#f2be5c;   --amber-bg:rgba(242,190,92,.10);   --amber-edge:rgba(242,190,92,.30);
@@ -304,10 +307,115 @@ code{font-family:var(--font-mono); font-size:.9em; background:var(--surface2); p
 .hero-basmala::after{background:linear-gradient(to left, var(--gold-edge), transparent)}
 
 .hero-in{position:relative; text-align:center; padding:62px 24px 68px; max-width:800px; margin:0 auto}
-.hero-logo{
-  height:132px; width:auto; max-width:60%; margin:0 auto 26px; object-fit:contain;
-  background:var(--surface2); border:1px solid var(--gold-edge); border-radius:6px;
-  padding:12px; box-shadow:var(--sh-1);
+/* ── Hero brand card — the logo-reveal animation, retuned to this site ────
+   Ported from the Uiverse "logo card" by Smit-Prajapati. The MOTION is the
+   same: the frame rotates from 10° and settles inset, the card squares up and
+   lifts, a gold trail sweeps once across the emblem, the English wordmark
+   slides out of it, and the name beneath opens its letter-spacing.
+   What is deliberately different, and why:
+     · colours → the site tokens (--surface2 / --gold / --gold-edge / --gold-t /
+       --gold-0), never the snippet's own slate and bronze (RULE 1: no raw
+       colour in a rule, and none is left)
+     · the snippet's animate-every-property transition → enumerated properties
+       (Part 10.3 forbids the shorthand; the site now has none at all)
+     · 0.5s / 1s `ease-in-out` → 380ms and 520ms on the site's --ease (Part 1
+       motion law; 520ms is the duration the milestone rail already glides at)
+     · `scale(1.1)` → `scale(1.06)`, so the growth stays inside the hero's
+       26px bottom margin instead of touching the H1
+     · `:hover` alone → `:hover` / `:focus-within`, plus a `(hover:none)` and a
+       `prefers-reduced-motion` branch that hold the card OPEN, so a phone and a
+       motion-sensitive reader get the full lockup rather than nothing
+   Every line inside is aria-hidden: the H1, the tagline and the hero note
+   already state the identity, so this is decoration and hides no information
+   behind hover. */
+.brandcard{
+  /* --bc-open is the width the reveal opens to: it must clear the emblem plus
+     the wordmark. Declared once here and overridden once at ≤900px, so the
+     wordmark stays centred in the frame at both sizes. */
+  --bc-open:284px;
+  position:relative; width:360px; max-width:100%; height:248px;
+  margin:0 auto 26px;
+  display:grid; place-content:center;
+  background:var(--surface2); border-radius:var(--r-card); overflow:hidden;
+  transition:border-radius 380ms var(--ease), transform 380ms var(--ease);
+}
+.brandcard-border{
+  position:absolute; inset:0; border:1px solid var(--gold-edge); border-radius:inherit;
+  opacity:0; transform:rotate(10deg); pointer-events:none;
+  transition:inset 380ms var(--ease), opacity 380ms var(--ease),
+             transform 380ms var(--ease), border-radius 380ms var(--ease);
+}
+.brandcard-logo{
+  /* the rest width IS the emblem's own rendered width (the asset is 2:3), so at
+     rest the card shows the emblem and nothing else — that is the reveal */
+  position:relative; height:88px; width:59px; margin:0 auto; overflow:hidden;
+  transition:width 520ms var(--ease);
+}
+.brandcard-mark{position:absolute; left:0; top:0; height:88px; display:flex; align-items:center}
+.brandcard-mark img{height:88px; width:auto; max-width:59px; object-fit:contain}
+.brandcard-word{
+  position:absolute; left:71px; top:0; height:88px; display:flex; align-items:center;
+  font-family:var(--font-mono); font-size:12px; letter-spacing:.18em;
+  text-transform:uppercase; white-space:nowrap; color:var(--gold);
+}
+.brandcard-trail{position:absolute; right:0; top:0; height:100%; width:100%; opacity:0; pointer-events:none}
+.brandcard-name{
+  /* positioned from the TOP of the card — never with translateY(-50%) — so the
+     gap under the emblem is exact and does not depend on the name's own height */
+  position:absolute; left:50%; top:calc(50% + 56px);
+  transform:translateX(-50%) translateY(8px);
+  font-family:var(--font-head); font-weight:600; font-size:18px; line-height:1.4;
+  white-space:nowrap; color:var(--gold-bright); opacity:0;
+  /* NO letter-spacing here. The snippet animates letter-spacing, which is fine
+     for its Latin wordmark but wrong for Bangla: it is an abugida, so tracking
+     pulls every matra away from the consonant it belongs to and the word stops
+     reading. The two Latin lines carry the tracking reveal instead; the Bangla
+     name rises and fades in. */
+  transition:opacity 380ms var(--ease) 300ms, transform 380ms var(--ease) 300ms;
+}
+.brandcard-foot{
+  position:absolute; left:50%; bottom:16px; transform:translateX(-50%);
+  font-family:var(--font-mono); font-size:8px; text-transform:uppercase;
+  letter-spacing:.5em; padding:0 4px 0 9px; white-space:nowrap;
+  color:var(--gold); background:var(--surface2); opacity:0;
+  transition:letter-spacing 380ms var(--ease), opacity 380ms var(--ease);
+}
+.hero-in .brandcard:hover,
+.hero-in .brandcard:focus-within{border-radius:0; transform:scale(1.06)}
+.hero-in .brandcard:hover .brandcard-border,
+.hero-in .brandcard:focus-within .brandcard-border{inset:15px; opacity:1; transform:rotate(0)}
+.hero-in .brandcard:hover .brandcard-logo,
+.hero-in .brandcard:focus-within .brandcard-logo{
+  width:var(--bc-open); animation:brandcard-scan 520ms var(--ease);
+}
+.hero-in .brandcard:hover .brandcard-trail,
+.hero-in .brandcard:focus-within .brandcard-trail{animation:brandcard-trail 520ms var(--ease)}
+.hero-in .brandcard:hover .brandcard-name,
+.hero-in .brandcard:focus-within .brandcard-name{opacity:1; transform:translateX(-50%) translateY(0)}
+.hero-in .brandcard:hover .brandcard-foot,
+.hero-in .brandcard:focus-within .brandcard-foot{letter-spacing:.22em; opacity:1}
+/* the snippet's 1px edge that flickers on as the wordmark slides out */
+@keyframes brandcard-scan{
+  0%{border-right:1px solid transparent}
+  10%{border-right:1px solid var(--gold)}
+  80%{border-right:1px solid var(--gold)}
+  100%{border-right:1px solid transparent}
+}
+/* the gold trail sweeping across the emblem, once */
+@keyframes brandcard-trail{
+  0%{background:linear-gradient(90deg,var(--gold-0) 90%,var(--gold) 100%); opacity:0}
+  30%{background:linear-gradient(90deg,var(--gold-0) 70%,var(--gold) 100%); opacity:1}
+  70%{background:linear-gradient(90deg,var(--gold-0) 70%,var(--gold) 100%); opacity:1}
+  95%{background:linear-gradient(90deg,var(--gold-0) 90%,var(--gold) 100%); opacity:0}
+}
+/* No hover to give (a phone), or motion that should not run: the card is simply
+   OPEN, so the reveal is never something only a mouse can reach. */
+@media (hover:none),(prefers-reduced-motion:reduce){
+  .brandcard{border-radius:0}
+  .brandcard-border{inset:15px; opacity:1; transform:rotate(0)}
+  .brandcard-logo{width:var(--bc-open)}
+  .brandcard-name{opacity:1; transform:translateX(-50%)}
+  .brandcard-foot{letter-spacing:.22em; opacity:1}
 }
 .hero h1{font-family:var(--font-head); font-size:52px; line-height:1.14; color:var(--text); margin-bottom:12px}
 .hero h1 .bi-en{margin-top:6px}
@@ -1031,7 +1139,14 @@ select{appearance:none; background-image:linear-gradient(45deg,transparent 50%,v
 @media (max-width:900px){
   .hero h1{font-size:38px}
   .hero-in{padding:56px 20px 52px}
-  .hero-logo{height:108px}
+  /* the card steps down a size at ≤900px and its reveal width with it, so the
+     wordmark stays centred instead of sitting in an over-wide frame */
+  .brandcard{--bc-open:248px; height:220px}
+  .brandcard-logo,.brandcard-mark,.brandcard-mark img,.brandcard-word{height:66px}
+  .brandcard-logo{width:44px}
+  .brandcard-mark img{max-width:44px}
+  .brandcard-word{left:56px; font-size:11px}
+  .brandcard-name{font-size:17px; top:calc(50% + 45px)}
   .sec-title{font-size:24px}
   .section{padding:56px 0 8px}
   .fgrid{grid-template-columns:1fr}
