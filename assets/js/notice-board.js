@@ -186,7 +186,7 @@
     var signedIn = !!auth;
     $('nbLogin').hidden = signedIn;
     $('nbEditor').hidden = !signedIn;
-    $('nbWho').textContent = signedIn ? (auth.email || '') : '';
+    $('nbWho').textContent = signedIn ? ((auth.email || '') + (auth.uid ? '  ·  ' + auth.uid : '')) : '';
     if ($('nbOut')) $('nbOut').hidden = !signedIn;
     if (signedIn) { $('nbEmail').value = ''; $('nbPass').value = ''; }
   }
@@ -293,7 +293,10 @@
 
   function failText(e) {
     var m = (e && e.message) || '';
-    if (m === 'NOT_ALLOWED') return 'আপনার অ্যাকাউন্টটি অনুমোদিত নয় — শুধু অনুমোদিত (approved) অ্যাকাউন্ট নোটিশ দিতে পারে।';
+    if (m === 'NOT_ALLOWED') {
+      return 'এই অ্যাকাউন্টটি অ্যাডমিন তালিকায় নেই — নোটিশ শুধু অ্যাডমিন অ্যাকাউন্ট দিতে পারে।' +
+        (auth && auth.uid ? '  (uid: ' + auth.uid + ')' : '');
+    }
     if (m === 'SESSION_EXPIRED' || m === 'NO_SESSION') return 'সেশন শেষ — আবার লগইন করুন।';
     if (m === 'Failed to fetch') return 'ইন্টারনেট সংযোগ পাওয়া যায়নি — আবার চেষ্টা করুন।';
     return 'কাজটি সম্পন্ন হয়নি' + (m ? ' (' + m + ')' : '') + '।';
