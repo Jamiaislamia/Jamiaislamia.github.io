@@ -5,12 +5,16 @@
    year to today).
 
    Layout (owner request): the horizontal HERITAGE RAIL — one column per
-   milestone, the node (year pill + numbered circle) above the line and the story
+   milestone, the node (the YEAR pill) above the line and the story
    below, alternating down the line, with an arrow into the next segment. The
    columns are cells of one grid, so every rail segment sits on the same line.
    The whole line is always rendered; a round arrow at each end walks it one
    column at a time, the frame opens on the latest milestone, and the edges fade
    so a half-visible column reads as the previous / next step.
+   Owner follow-up (2026-10-29): the ০১–০৭ step numbers were REMOVED. The node
+   carries the year only, so the rail reads as a chronology rather than a short
+   numbered list — and the section's English line no longer states a count for
+   the same reason.
    Language law: the year chip and the English tag chip are the only chrome;
    the title and note are Bangla, and `descEn` supplies ONE short result-first
    English line (never a translated paragraph).
@@ -118,9 +122,6 @@
     if (window.siteEn && e[base]) return window.siteEn(e[base]) || '';
     return '';
   }
-  function stepNumber(n) {
-    return bn(('0' + n).slice(-2));
-  }
 
   /* ── the rail's two arrows ──────────────────────────────
      Inline SVG only (blueprint 10.1) — a chevron, never a glyph. */
@@ -214,15 +215,15 @@
   }
 
   /* The section's ONE English orientation line — read from the data, so an 8th
-     milestone can never make the copy lie. */
+     milestone can never make the copy lie. It deliberately states NO COUNT:
+     "7 milestones" made a 23-year record read as a short list, which is the
+     opposite of what the section is for. The span and the habit say it instead. */
   function renderSummary(entries) {
     var en = el('historyCount');
     if (!en) return;
     if (!entries.length) { en.textContent = ''; return; }
     var first = yearNumber(entries[0].year);
-    var last = yearNumber(entries[entries.length - 1].year);
-    en.textContent = entries.length + ' milestones · ' + first + ' → ' + last +
-      ' — use the arrows to walk the line.';
+    en.textContent = 'From ' + first + ' to today — use the arrows to walk the line.';
   }
 
   /* The pill of the column nearest the top of the viewport carries the gold
@@ -269,9 +270,10 @@
     entries = sortEntries(entries, data.sort || 'newest-first');
 
     /* The infographic rail: EVERY milestone is on the line at once — one column
-       each. The node (year pill + numbered circle) sits on one side and the
-       story on the other, alternating down the line, with an arrow into the next
-       segment. The step number runs with the calendar — ০১ at the founding year.
+       each. The node (the year pill) sits on one side and the story on the
+       other, alternating down the line, with an arrow into the next segment.
+       The year IS the node — there is no step number, so the rail reads as a
+       chronology rather than a short numbered list (owner request).
        The two round buttons walk the line; the edge fade shows what is coming
        and what has just gone. */
     var html = '<div class="hist-band">' +
@@ -288,11 +290,11 @@
       var node =
         '<a class="hist-node' + (isNow ? ' hist-node--now' : '') + '" href="#milestone-' + i +
           '" data-i="' + i + '" title="' + esc(e.title || '') + '">' +
+          /* the node carries the YEAR and nothing else — no step number */
           '<span class="stepper-year"' + (isYear(year) ? ' title="' + esc(year) + '"' : '') + '>' +
             esc(isYear(year) ? bn(year) : year) +
             (isYear(year) ? '<em>' + esc(year) + '</em>' : '') +
           '</span>' +
-          '<span class="stepper-node" aria-hidden="true">' + esc(stepNumber(i + 1)) + '</span>' +
         '</a>';
       var story =
         '<div class="hist-text">' +
