@@ -175,8 +175,8 @@ That means: upload photos to `Photos/<Album>/` → push → they appear.
 
 ### Current photos
 
-Six photos are already wired in (taken from the institute's own Google Maps photo links,
-optimised to 1000px JPEGs, ~918 KB total, lazy-loaded): `Campus/campus.jpg`,
+Six photos are already wired in (the campus shot is the institute's own; the rest came from its
+Google Maps photo links — optimised for the web, up to 1600px JPEGs, ~990 KB total, lazy-loaded): `Campus/campus.jpg`,
 `Students/students-1.jpg`, `Students/students-2.jpg`, `Mosque/mosque.jpg`,
 `Events/event-1.jpg`, `Events/event-2.jpg`.
 
