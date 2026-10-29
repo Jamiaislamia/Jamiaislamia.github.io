@@ -371,13 +371,41 @@ code{font-family:var(--font-mono); font-size:.9em; background:var(--surface2); p
 .stream-card.is-soon .stream-desc{color:var(--muted2)}
 .stream-card.is-soon .stream-chips li{opacity:.85}
 
-/* ── Aspect sheet (Culture): six short items as one card of hairline cells
-   instead of six identical cards — keeps one card per section (C15). */
-.aspects{position:relative; z-index:1; display:grid; grid-template-columns:repeat(2,1fr)}
-.aspect{padding:22px; border-top:1px solid var(--border); transition:background 150ms var(--ease)}
-.aspect:nth-child(2n){border-left:1px solid var(--border)}
-.aspect:nth-child(-n+2){border-top:0}
+/* ── Aspect sheet (Culture) — SIX PILLARS inside one card ─────────────
+   The six ideals used to be a flat 2×3 ledger of paragraphs: no entry
+   point, nothing anchoring the gold micro-label to its item, and a slack
+   band under the last row. They are now a Swiss matrix — three pillars
+   across, two down — and every cell opens with a 38px gold node carrying
+   a line icon, with the English label on the node's centre line so it can
+   never float free. `grid-auto-rows:1fr` forces both rows to the same
+   height, so the sheet ends on a straight edge however long a note runs.
+   One card, one accent, no nested cards (blueprint C15 / Part 11). */
+.aspects{
+  position:relative; z-index:1;
+  display:grid; grid-template-columns:repeat(3,1fr); grid-auto-rows:1fr;
+}
+.aspect{
+  display:flex; flex-direction:column;
+  padding:24px 22px; border-top:1px solid var(--border);
+  transition:background 150ms var(--ease);
+}
+/* the inner column rules, and no rule above the first row */
+.aspect:nth-child(3n+2),.aspect:nth-child(3n){border-left:1px solid var(--border)}
+.aspect:nth-child(-n+3){border-top:0}
 .aspect:hover{background:var(--surface2)}
+.asp-head{display:flex; align-items:center; gap:12px; margin-bottom:15px}
+.asp-node{
+  flex:0 0 auto; width:38px; height:38px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--gold); background:var(--surface2); border:1px solid var(--border2);
+  transition:color 200ms var(--ease), border-color 200ms var(--ease), background 200ms var(--ease);
+}
+.asp-node svg{width:20px; height:20px}
+.aspect .subj-en{margin-bottom:0}
+.aspect .value-title{font-size:18px; margin-bottom:7px}
+.aspect .value-desc{font-size:13px; line-height:1.8}
+/* hover recolours the cell and its node — it never moves them */
+.aspect:hover .asp-node{color:var(--gold-bright); border-color:var(--gold-edge); background:var(--gold-t)}
 
 /* ── Grids ──────────────────────────────────────────── */
 .grid{display:grid; gap:16px}
@@ -959,6 +987,13 @@ select{appearance:none; background-image:linear-gradient(45deg,transparent 50%,v
   .contact-ledger{grid-template-columns:1fr}
   .contact-col{padding:16px 20px; border-left:0; border-top:1px solid var(--border)}
   .contact-col:first-child{padding-top:20px; border-top:0}
+  /* culture pillars go 3-across → 2-across, and the inner rules are re-drawn
+     so no cell is left holding a hairline that no longer divides anything */
+  .aspects{grid-template-columns:repeat(2,1fr)}
+  .aspect:nth-child(3n+2),.aspect:nth-child(3n){border-left:0}
+  .aspect:nth-child(2n){border-left:1px solid var(--border)}
+  .aspect:nth-child(-n+3){border-top:1px solid var(--border)}
+  .aspect:nth-child(-n+2){border-top:0}
   .hist-band{display:block}
   .hist-nav{display:none}
   /* below 900px the rail turns upright: the node row leads each milestone and
@@ -998,8 +1033,8 @@ select{appearance:none; background-image:linear-gradient(45deg,transparent 50%,v
   .gal--feature{grid-column:auto; grid-row:auto}
   .gal--feature .gal-photo{flex:0 0 auto; aspect-ratio:4/3}
   .aspects{grid-template-columns:1fr}
-  .aspect:nth-child(2n){border-left:0}
-  .aspect:nth-child(-n+2){border-top:1px solid var(--border)}
+  .aspect:nth-child(3n+2),.aspect:nth-child(3n),.aspect:nth-child(2n){border-left:0}
+  .aspect:nth-child(-n+3){border-top:1px solid var(--border)}
   .aspect:first-child{border-top:0}
   .super-card{gap:22px}
   .super-photo{width:196px}
@@ -1030,6 +1065,7 @@ select{appearance:none; background-image:linear-gradient(45deg,transparent 50%,v
   .stepper-title{font-size:16px}
   .stepper-desc{font-size:12px}
   .stepper-year{font-size:10px; letter-spacing:.1em; padding:3px 8px}
+  .aspect{padding:20px 18px}
 }
 
 /* Very narrow phones (≤430px): the brand name steps aside so the Apply button and
