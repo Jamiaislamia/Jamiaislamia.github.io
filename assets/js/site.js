@@ -124,7 +124,7 @@
       ['ভর্তি', 'Admission', [
         ['apply-student.html', 'শিক্ষার্থী আবেদন', 'student'],
         ['apply-teacher.html', 'শিক্ষক আবেদন', 'teacher'],
-        ['https://sms-admission-4f632.web.app/apply-portal/#track', 'অবস্থা যাচাই']
+        ['https://jamiaislamia.web.app/apply-portal/#track', 'অবস্থা যাচাই']
       ]],
       ['আরও', 'More', [
         ['teachers.html', 'শিক্ষকগণ'],

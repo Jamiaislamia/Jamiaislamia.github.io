@@ -82,9 +82,9 @@ accepts both `APP-…` and `TCH-…` — so no application form is implemented i
 
 ```js
 window.SITE_LINKS = {
-  applyPortal: 'https://sms-admission-4f632.web.app/apply-portal/', /* header Apply button + Track links */
-  studentForm: 'https://sms-admission-4f632.web.app/admission-form/',
-  teacherForm: 'https://sms-admission-4f632.web.app/teacher-form/',
+  applyPortal: 'https://jamiaislamia.web.app/apply-portal/', /* header Apply button + Track links */
+  studentForm: 'https://jamiaislamia.web.app/admission-form/',
+  teacherForm: 'https://jamiaislamia.web.app/teacher-form/',
   mapUrl: 'https://maps.app.goo.gl/WCHuTP543BiybpHY9' /* every "Find us here" link */
 };
 ```

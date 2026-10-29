@@ -5,10 +5,13 @@ The public website **and** the three application forms are served by **Firebase 
 
 | URL | What it is | Built from |
 | - | - | - |
-| `https://sms-admission-4f632.web.app/` | the institute website | this folder (`website-upload/`) |
-| `https://sms-admission-4f632.web.app/admission-form/` | student registration | `admission-form/index.html` |
-| `https://sms-admission-4f632.web.app/teacher-form/` | teacher registration | `teacher-portal/` (built Vite app) |
-| `https://sms-admission-4f632.web.app/apply-portal/` | apply hub + status checker | `apply-portal/index.html` |
+| `https://jamiaislamia.web.app/` | the institute website | this folder (`website-upload/`) |
+| `https://jamiaislamia.web.app/admission-form/` | student registration | `admission-form/index.html` |
+| `https://jamiaislamia.web.app/teacher-form/` | teacher registration | `teacher-portal/` (built Vite app) |
+| `https://jamiaislamia.web.app/apply-portal/` | apply hub + status checker | `apply-portal/index.html` |
+
+`sms-admission-4f632.web.app` mirrors the same release (a second site entry in `firebase.json`), so
+older links never break — but the `jamiaislamia.web.app` URLs above are the ones to share.
 
 ---
 
@@ -41,7 +44,7 @@ firebase deploy --only hosting --project sms-admission-4f632
 ```
 
 The first command prints what it staged (40 files, ~2.1 MB) and confirms the four entry
-points exist. The second prints `Hosting URL: https://sms-admission-4f632.web.app`.
+points exist. The second prints `Hosting URL: https://jamiaislamia.web.app`.
 
 `--only hosting` matters: it deploys **only** the web files. It never touches the live
 Realtime Database rules (`firebase deploy --only database` is a separate, deliberate step

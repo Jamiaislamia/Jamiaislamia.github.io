@@ -13,13 +13,13 @@ window.SITE_LINKS = {
   /* Apply hub (Firebase Hosting) — the page with the three doors: student form,
      teacher form, and the status checker for both. The header's Apply button
      opens this. While empty it falls back to studentForm below. */
-  applyPortal: 'https://sms-admission-4f632.web.app/apply-portal/',
+  applyPortal: 'https://jamiaislamia.web.app/apply-portal/',
 
   /* Student admission form (Firebase Hosting) */
-  studentForm: 'https://sms-admission-4f632.web.app/admission-form/',
+  studentForm: 'https://jamiaislamia.web.app/admission-form/',
 
   /* Teacher application form (Firebase Hosting) */
-  teacherForm: 'https://sms-admission-4f632.web.app/teacher-form/',
+  teacherForm: 'https://jamiaislamia.web.app/teacher-form/',
 
   /* Campus location — every "Find us here" link uses this one URL */
   mapUrl: 'https://maps.app.goo.gl/WCHuTP543BiybpHY9',
