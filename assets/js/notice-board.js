@@ -11,7 +11,10 @@
        text        the notice, 3–600 characters, required
        tag         admission | hiring | closure | general
        publishedAt ISO timestamp
-       expiresAt   '' or 'YYYY-MM-DD' — the public site hides it after that day
+       expiresAt   '' or 'YYYY-MM-DD' or 'YYYY-MM-DDTHH:MM' — the deadline.
+                   A bare date lasts to the end of that day; a date + time
+                   retires the notice at that exact minute. The public site
+                   and the admin panel both hide a notice once it has passed.
        by          the author's email (shown in the list, never on the site)
 
    Auth reuses the accounts the dashboard already uses:
@@ -65,7 +68,10 @@
     var pad = function (n) { return (n < 10 ? '0' : '') + n; };
     return bn(d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()));
   }
-  /* a deadline is a date, never a clock time: '2027-01-05' → '৫ জানুয়ারি ২০২৭' */
+  /* a deadline is a date, or a date + a clock time:
+       '2027-01-05'        → '৫ জানুয়ারি ২০২৭'            (all day)
+       '2027-01-05T17:30'  → '৫ জানুয়ারি ২০২৭, বিকাল ৫:৩০'
+     The public site and the admin panel use the same two shapes. */
   var BN_MONTH = ['জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন',
     'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'];
   function bnDate(iso) {
@@ -75,6 +81,40 @@
     var mi = parseInt(m[2], 10) - 1;
     if (mi < 0 || mi > 11) return '';
     return bn(parseInt(m[3], 10)) + ' ' + BN_MONTH[mi] + ' ' + bn(m[1]);
+  }
+  /* 'YYYY-MM-DD' | 'YYYY-MM-DDTHH:MM' → the millisecond the notice retires.
+     A bare date keeps the whole of that day. 0 = no deadline at all. */
+  function deadlineMs(iso) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2}))?/.exec(String(iso == null ? '' : iso).trim());
+    if (!m) return 0;
+    var y = parseInt(m[1], 10), mo = parseInt(m[2], 10) - 1, d = parseInt(m[3], 10);
+    if (mo < 0 || mo > 11) return 0;
+    if (m[4] == null) return new Date(y, mo, d, 23, 59, 59, 999).getTime();
+    return new Date(y, mo, d, parseInt(m[4], 10), parseInt(m[5], 10), 0, 0).getTime();
+  }
+  /* Bangla part of the day — a deadline reads "বিকাল ৫:৩০", never "17:30" */
+  function bnMeridiem(h) {
+    if (h < 4) return 'রাত';
+    if (h < 6) return 'ভোর';
+    if (h < 12) return 'সকাল';
+    if (h < 16) return 'দুপুর';
+    if (h < 19) return 'বিকাল';
+    if (h < 21) return 'সন্ধ্যা';
+    return 'রাত';
+  }
+  function bnClock(iso) {
+    var m = /(?:[T ])(\d{2}):(\d{2})/.exec(String(iso || ''));
+    if (!m) return '';
+    var h = parseInt(m[1], 10), mi = parseInt(m[2], 10);
+    var h12 = h % 12; if (h12 === 0) h12 = 12;
+    return bnMeridiem(h) + ' ' + bn(h12) + ':' + (mi < 10 ? '০' : '') + bn(mi);
+  }
+  /* the whole deadline, in one string */
+  function bnWhen(iso) {
+    var d = bnDate(iso);
+    if (!d) return '';
+    var c = bnClock(iso);
+    return c ? d + ', ' + c : d;
   }
 
   function stamp() {
@@ -213,7 +253,8 @@
     }
     host.innerHTML = notices.map(function (n) {
       var t = tagOf(n.tag);
-      var expired = n.expiresAt && new Date(n.expiresAt + 'T23:59:59').getTime() < now;
+      var end = deadlineMs(n.expiresAt);
+      var expired = end > 0 && end < now;
       return '<div class="nb-item' + (expired ? ' is-expired' : '') + '" data-id="' + esc(n.id) + '">' +
         '<div class="nb-item-head">' +
           '<span class="nb-tag ' + t.cls + '">' + esc(t.bn) + '</span>' +
@@ -222,7 +263,7 @@
         '<p class="nb-item-text">' + esc(n.text) + '</p>' +
         '<div class="nb-item-foot">' +
           '<span class="nb-meta">' + esc(fmtDate(n.publishedAt)) +
-            (n.expiresAt ? ' · শেষ ' + esc(bnDate(n.expiresAt)) : '') + '</span>' +
+            (n.expiresAt ? ' · শেষ ' + esc(bnWhen(n.expiresAt)) : '') + '</span>' +
           '<button class="nb-del" type="button" data-del="' + esc(n.id) + '">সরিয়ে নিন</button>' +
         '</div>' +
       '</div>';
@@ -260,7 +301,11 @@
     if (busy) return;
     var text = ($('nbText').value || '').trim();
     var tag = ($('nbTag') && $('nbTag').value) || 'general';
-    var exp = ($('nbExpire') && $('nbExpire').value) || '';
+    var day = ($('nbExpire') && $('nbExpire').value) || '';
+    var clock = ($('nbExpireTime') && $('nbExpireTime').value) || '';
+    /* no day → no deadline (a time alone means nothing); a day without a
+       clock keeps the whole day, exactly as before */
+    var exp = day ? (clock ? day + 'T' + clock : day) : '';
 
     if (text.length < MIN_LEN) { say('নোটিশটি লিখুন (অন্তত ' + bn(MIN_LEN) + ' অক্ষর)।', 'is-err'); return; }
     if (text.length > MAX_LEN) { say('নোটিশটি ' + bn(MAX_LEN) + ' অক্ষরের মধ্যে রাখুন।', 'is-err'); return; }
@@ -278,6 +323,7 @@
     }).then(function () {
       $('nbText').value = '';
       if ($('nbExpire')) $('nbExpire').value = '';
+      if ($('nbExpireTime')) $('nbExpireTime').value = '';
       say('প্রকাশিত হয়েছে — ওয়েবসাইটে এখনই দেখা যাবে।', 'is-ok');
       return loadList();
     }).catch(function (e) {

@@ -275,7 +275,9 @@
   function bnDigits(s) {
     return String(s).replace(/[0-9]/g, function (d) { return '০১২৩৪৫৬৭৮৯'[+d]; });
   }
-  /* '2027-01-05' → '৫ জানুয়ারি ২০২৭' (a deadline is a date, never a clock time) */
+  /* '2027-01-05' → '৫ জানুয়ারি ২০২৭' · '2027-01-05T17:30' → '…, বিকাল ৫:৩০'
+     A deadline is a date with an optional clock time; a bare date lasts to the
+     end of that day, exactly as the notice board writes it. */
   function bnDate(iso) {
     if (!iso) return '';
     var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(iso));
@@ -283,6 +285,37 @@
     var mi = parseInt(m[2], 10) - 1;
     if (mi < 0 || mi > 11) return '';
     return bnDigits(parseInt(m[3], 10)) + ' ' + BN_MONTH[mi] + ' ' + bnDigits(m[1]);
+  }
+  /* the millisecond the notice retires; 0 when there is no deadline */
+  function deadlineMs(iso) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2}))?/.exec(String(iso == null ? '' : iso).trim());
+    if (!m) return 0;
+    var y = parseInt(m[1], 10), mo = parseInt(m[2], 10) - 1, d = parseInt(m[3], 10);
+    if (mo < 0 || mo > 11) return 0;
+    if (m[4] == null) return new Date(y, mo, d, 23, 59, 59, 999).getTime();
+    return new Date(y, mo, d, parseInt(m[4], 10), parseInt(m[5], 10), 0, 0).getTime();
+  }
+  function bnMeridiem(h) {
+    if (h < 4) return 'রাত';
+    if (h < 6) return 'ভোর';
+    if (h < 12) return 'সকাল';
+    if (h < 16) return 'দুপুর';
+    if (h < 19) return 'বিকাল';
+    if (h < 21) return 'সন্ধ্যা';
+    return 'রাত';
+  }
+  function bnClock(iso) {
+    var m = /(?:[T ])(\d{2}):(\d{2})/.exec(String(iso || ''));
+    if (!m) return '';
+    var h = parseInt(m[1], 10), mi = parseInt(m[2], 10);
+    var h12 = h % 12; if (h12 === 0) h12 = 12;
+    return bnMeridiem(h) + ' ' + bnDigits(h12) + ':' + (mi < 10 ? '০' : '') + bnDigits(mi);
+  }
+  function bnWhen(iso) {
+    var d = bnDate(iso);
+    if (!d) return '';
+    var c = bnClock(iso);
+    return c ? d + ', ' + c : d;
   }
 
   function escHtml(v) {
@@ -307,7 +340,8 @@
           var n = map[k] || {};
           var text = n.text == null ? '' : String(n.text).trim();
           if (!text) return;
-          if (n.expiresAt && new Date(n.expiresAt + 'T23:59:59').getTime() < now) return;
+          var end = deadlineMs(n.expiresAt);
+          if (end > 0 && end < now) return;
           list.push({ id: k, text: text, tag: NOTICE_TAG[n.tag] ? n.tag : 'general', expiresAt: n.expiresAt || '' });
         });
         if (!list.length) return;
@@ -318,7 +352,7 @@
         bar.setAttribute('role', 'status');
         bar.setAttribute('aria-live', 'polite');
         bar.innerHTML = list.slice(0, 2).map(function (n) {
-          var when = bnDate(n.expiresAt);
+          var when = bnWhen(n.expiresAt);
           return '<div class="notice-row">' +
             '<span class="notice-tag ' + (n.tag === 'closure' ? 'is-warn' : 'is-open') + '">' +
               escHtml(NOTICE_TAG[n.tag]) + '</span>' +

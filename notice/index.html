@@ -74,6 +74,12 @@
     font-family:var(--font-mono); font-size:10.5px; color:var(--muted2);
     text-align:right; margin:-8px 0 12px;
   }
+  /* deadline = a date + an optional clock; no clock means "to the end of that day" */
+  .nb-when{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+  .nb-when-hint{
+    font-family:var(--font-mono); font-size:10.5px; letter-spacing:.02em; line-height:1.7;
+    color:var(--muted2); margin:-8px 0 14px;
+  }
   .nb-btn{
     width:100%; padding:15px 18px; border-radius:var(--r-btn); cursor:pointer;
     font-family:var(--font-mono); font-size:13px; font-weight:500; letter-spacing:.08em;
@@ -120,7 +126,7 @@
   @media (max-width:430px){
     .nb-brand{font-size:16px}
     .nb-brand b{display:none}
-    .nb-row{grid-template-columns:1fr}
+    .nb-when{grid-template-columns:1fr}
   }
 </style>
 </head>
@@ -184,14 +190,18 @@
       <textarea id="nbText" maxlength="600" placeholder="যেমন: ভর্তি চলছে — ২০২৭ সেশনে আগ্রহী শিক্ষার্থীদের ভর্তি চলছে।"></textarea>
     </label>
     <div class="nb-count" id="nbCount">০ / ৬০০</div>
-    <div class="nb-row">
-      <label>ধরন
-        <select id="nbTag"></select>
-      </label>
+    <label>ধরন
+      <select id="nbTag"></select>
+    </label>
+    <div class="nb-when">
       <label>শেষ তারিখ (ঐচ্ছিক)
         <input id="nbExpire" type="date">
       </label>
+      <label>শেষ সময় (ঐচ্ছিক)
+        <input id="nbExpireTime" type="time">
+      </label>
     </div>
+    <p class="nb-when-hint">সময় না দিলে ওই দিনের একদম শেষ পর্যন্ত নোটিশটি দেখা যাবে — সময় দিলে ঠিক ওই মিনিটে নোটিশটি নিজেই সরে যাবে।</p>
     <button class="nb-btn nb-primary" id="nbPublish" type="button">প্রকাশ করুন</button>
   </section>
 
@@ -206,6 +216,6 @@
 </main>
 
 <script src="../assets/js/site-links.js?v=20261029m"></script>
-<script src="../assets/js/notice-board.js?v=20261029c"></script>
+<script src="../assets/js/notice-board.js?v=20261029d"></script>
 </body>
 </html>
