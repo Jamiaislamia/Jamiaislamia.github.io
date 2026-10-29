@@ -1339,9 +1339,17 @@ select{appearance:none; background-image:linear-gradient(45deg,transparent 50%,v
 .notice-tag.is-open{color:var(--teal); border-color:var(--teal-edge); background:var(--teal-bg)}
 .notice-tag.is-warn{color:var(--amber); border-color:var(--amber-edge); background:var(--amber-bg)}
 .notice-text{font-size:13.5px; line-height:1.7; color:var(--body); min-width:0}
+/* the deadline the authority chose — always shown when one was set */
+.notice-when{
+  flex:0 0 auto; margin-left:auto; white-space:nowrap;
+  font-family:var(--font-mono); font-size:10px; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--muted); background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--r-tag); padding:3px 8px;
+}
 @media (max-width:560px){
   .notice-bar .notice-row{padding:9px 14px; align-items:flex-start; gap:9px}
   .notice-text{font-size:12.5px}
+  .notice-when{margin-left:0}
 }
 
 /* ── Reduced motion ─────────────────────────────────── */

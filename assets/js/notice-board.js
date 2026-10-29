@@ -65,6 +65,18 @@
     var pad = function (n) { return (n < 10 ? '0' : '') + n; };
     return bn(d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()));
   }
+  /* a deadline is a date, never a clock time: '2027-01-05' → '৫ জানুয়ারি ২০২৭' */
+  var BN_MONTH = ['জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন',
+    'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'];
+  function bnDate(iso) {
+    if (!iso) return '';
+    var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(iso));
+    if (!m) return '';
+    var mi = parseInt(m[2], 10) - 1;
+    if (mi < 0 || mi > 11) return '';
+    return bn(parseInt(m[3], 10)) + ' ' + BN_MONTH[mi] + ' ' + bn(m[1]);
+  }
+
   function stamp() {
     var d = new Date();
     var pad = function (n) { return (n < 10 ? '0' : '') + n; };
@@ -210,7 +222,7 @@
         '<p class="nb-item-text">' + esc(n.text) + '</p>' +
         '<div class="nb-item-foot">' +
           '<span class="nb-meta">' + esc(fmtDate(n.publishedAt)) +
-            (n.expiresAt ? ' · শেষ ' + esc(fmtDate(n.expiresAt + 'T00:00:00')) : '') + '</span>' +
+            (n.expiresAt ? ' · শেষ ' + esc(bnDate(n.expiresAt)) : '') + '</span>' +
           '<button class="nb-del" type="button" data-del="' + esc(n.id) + '">সরিয়ে নিন</button>' +
         '</div>' +
       '</div>';

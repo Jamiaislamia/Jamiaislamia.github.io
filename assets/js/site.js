@@ -269,6 +269,21 @@
     closure: 'বন্ধ / ছুটি',
     general: 'নোটিশ'
   };
+  var BN_MONTH = ['জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন',
+    'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'];
+
+  function bnDigits(s) {
+    return String(s).replace(/[0-9]/g, function (d) { return '০১২৩৪৫৬৭৮৯'[+d]; });
+  }
+  /* '2027-01-05' → '৫ জানুয়ারি ২০২৭' (a deadline is a date, never a clock time) */
+  function bnDate(iso) {
+    if (!iso) return '';
+    var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(iso));
+    if (!m) return '';
+    var mi = parseInt(m[2], 10) - 1;
+    if (mi < 0 || mi > 11) return '';
+    return bnDigits(parseInt(m[3], 10)) + ' ' + BN_MONTH[mi] + ' ' + bnDigits(m[1]);
+  }
 
   function escHtml(v) {
     return String(v == null ? '' : v)
@@ -293,7 +308,7 @@
           var text = n.text == null ? '' : String(n.text).trim();
           if (!text) return;
           if (n.expiresAt && new Date(n.expiresAt + 'T23:59:59').getTime() < now) return;
-          list.push({ id: k, text: text, tag: NOTICE_TAG[n.tag] ? n.tag : 'general' });
+          list.push({ id: k, text: text, tag: NOTICE_TAG[n.tag] ? n.tag : 'general', expiresAt: n.expiresAt || '' });
         });
         if (!list.length) return;
         list.sort(function (a, b) { return a.id < b.id ? 1 : (a.id > b.id ? -1 : 0); });
@@ -303,10 +318,12 @@
         bar.setAttribute('role', 'status');
         bar.setAttribute('aria-live', 'polite');
         bar.innerHTML = list.slice(0, 2).map(function (n) {
+          var when = bnDate(n.expiresAt);
           return '<div class="notice-row">' +
             '<span class="notice-tag ' + (n.tag === 'closure' ? 'is-warn' : 'is-open') + '">' +
               escHtml(NOTICE_TAG[n.tag]) + '</span>' +
             '<span class="notice-text">' + escHtml(n.text) + '</span>' +
+            (when ? '<span class="notice-when">শেষ: ' + escHtml(when) + '</span>' : '') +
           '</div>';
         }).join('');
         host.parentNode.insertBefore(bar, host.nextSibling);
