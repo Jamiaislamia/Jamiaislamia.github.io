@@ -501,28 +501,70 @@ code{font-family:var(--font-mono); font-size:.9em; background:var(--surface2); p
 .stream-card.is-soon .stream-desc{color:var(--muted2)}
 .stream-card.is-soon .stream-chips li{opacity:.85}
 
-/* ── Culture sheet — SIX IDEALS, NO FRAME ─────────────────────────────
-   These six ideals were drawn inside one card and split by hairlines: a
-   box put around ideas, with a rule between each pair of them. The owner
-   asked for the opposite composition — the reference's free-standing
-   columns — so the card, the dividers and the icon node are all gone:
-   every pillar opens with a bare gold line icon, and the pillars are held
-   apart by whitespace alone.
-   The 3 × 2 rhythm and the equal rows STAY (`grid-auto-rows:1fr`): that is
-   what keeps the three icons of a row on one optical line however long a
-   note runs. Nothing in the sheet is a control, so nothing in it has a
-   hover state. */
+/* ── Culture — the SIX-STOP RAIL ──────────────────────────────────────
+   The owner's reference is a vertical infographic: ONE connector line, the
+   cards alternating either side of it, and a bare icon perched on the line
+   where each card joins. Laid HORIZONTALLY it becomes this: one hairline
+   spine across the section, the six ideals alternating above and below it,
+   each panel hanging off the spine on a short stem, and its gold line icon
+   standing ON the spine — the icon's own background knocks the hairline out
+   where it passes, so the icon reads as the joint rather than a decoration.
+   Geometry: ONE grid. Every stop owns three cells — panel · rail · empty
+   side — and `display:contents` flattens the stop into those cells, so all
+   six spine segments land on the same line however tall a panel grows. The
+   outer rows are equal (1fr), which is what keeps the two rows of panels
+   symmetric about the spine at every width.
+   Nothing in the rail is a control: no link, no hover state, no shadow. */
 .aspects{
   position:relative;
-  display:grid; grid-template-columns:repeat(3,1fr); grid-auto-rows:1fr;
-  column-gap:44px; row-gap:52px;
+  display:grid; grid-auto-flow:column;
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  grid-template-rows:minmax(0,1fr) 34px minmax(0,1fr);
 }
-.aspect{display:flex; flex-direction:column; min-width:0}
-.asp-icon{display:block; line-height:0; margin-bottom:18px; color:var(--gold)}
+/* the stop is three grid cells of the strip but stays ONE unit in the DOM */
+.aspect{display:contents}
+.asp-cell{min-width:0}
+
+/* the panel — a hairline box hanging off the spine. Odd stops sit above it,
+   even stops below, and the gold tint alternates with them: that is the
+   reference's own two-tone rhythm, one accent layer, never a second accent */
+.asp-cell--box{display:flex; justify-content:center; align-self:end; padding:0 7px 22px}
+.aspect:nth-child(even) .asp-cell--box{align-self:start; padding:22px 7px 0}
+.asp-box{
+  position:relative; width:100%;
+  padding:13px 13px 15px;
+  background:var(--surface); border:1px solid var(--border2); border-radius:var(--r-card);
+}
+.aspect:nth-child(even) .asp-box{background:var(--gold-t); border-color:var(--gold-edge)}
+/* the stem — panel edge to the spine: 22px of air + half the 34px rail row */
+.asp-box::after{
+  content:""; position:absolute; left:50%; top:100%; width:1px; height:39px;
+  background:var(--gold-edge);
+}
+.aspect:nth-child(even) .asp-box::after{top:auto; bottom:100%}
+
+/* the rail — one hairline per stop, butted together into a single spine and
+   trimmed at the two outer stops, so the line starts and ends ON an icon */
+.asp-cell--rail{position:relative}
+.asp-cell--rail::before{
+  content:""; position:absolute; left:0; right:0; top:16.5px; height:1px;
+  background:var(--gold-edge);
+}
+.aspect:first-child .asp-cell--rail::before{left:50%}
+.aspect:last-child .asp-cell--rail::before{right:50%}
+/* the icon stands on the spine as bare gold line art — no disc, no node.
+   Its --bg block is what hides the hairline behind the drawing. */
+.asp-icon{
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  display:block; line-height:0; color:var(--gold);
+  background:var(--bg); padding:3px;
+}
 .asp-icon svg{width:26px; height:26px}
-.aspect .subj-en{margin-bottom:11px}
-.aspect .value-title{font-size:19px; margin-bottom:8px}
-.aspect .value-desc{font-size:13px; line-height:1.85; max-width:36ch}
+
+/* the panel's own type — a 6-stop rail is tighter than the page's 19px/13px */
+.asp-box .subj-en{margin-bottom:8px}
+.asp-box .value-title{font-size:15.5px; line-height:1.45; margin-bottom:6px}
+.asp-box .value-desc{font-size:12px; line-height:1.75}
 
 /* ── Grids ──────────────────────────────────────────── */
 .grid{display:grid; gap:16px}
@@ -1113,6 +1155,26 @@ select{appearance:none; background-image:linear-gradient(45deg,transparent 50%,v
   .nav a:last-child{border-bottom:0}
   .nav a.active{background:transparent}
   .header-in{position:relative}
+  /* ── below 1120px the culture rail turns upright ───────────────────
+     Six stops on one line would squeeze every Bengali note into ~150px
+     columns, so the SAME rail is stood on its end: one vertical spine down
+     the left, the icon standing on it, the panel to its right, and the gold
+     tint still alternating down the list. Only the axis changes — the
+     connector still runs from icon to icon, trimmed at both ends. */
+  .aspects{display:flex; flex-direction:column; gap:20px; grid-template-columns:none; grid-template-rows:none}
+  .aspect{display:grid; grid-template-columns:34px minmax(0,1fr); column-gap:16px}
+  .asp-cell--void{display:none}
+  .asp-cell--box{grid-column:2; grid-row:1; display:block; align-self:start; padding:0}
+  .aspect:nth-child(even) .asp-cell--box{padding:0}
+  .asp-cell--rail{grid-column:1; grid-row:1; align-self:stretch}
+  .asp-cell--rail::before{left:16px; right:auto; top:16px; bottom:-36px; width:1px; height:auto}
+  .aspect:first-child .asp-cell--rail::before{left:16px}
+  .aspect:last-child .asp-cell--rail::before{right:auto; display:none}
+  .asp-icon{top:0; left:50%; transform:translateX(-50%)}
+  .asp-box{padding:14px 15px 16px}
+  .asp-box::after{display:none}
+  .asp-box .value-title{font-size:17px}
+  .asp-box .value-desc{font-size:12.5px; max-width:58ch}
 }
 @media (max-width:900px){
   .hero h1{font-size:38px}
@@ -1124,9 +1186,6 @@ select{appearance:none; background-image:linear-gradient(45deg,transparent 50%,v
   .contact-ledger{grid-template-columns:1fr}
   .contact-col{padding:16px 20px; border-left:0; border-top:1px solid var(--border)}
   .contact-col:first-child{padding-top:20px; border-top:0}
-  /* culture pillars go 3-across → 2-across. There are no rules to re-draw
-     any more: the gaps do the dividing, at every width. */
-  .aspects{grid-template-columns:repeat(2,1fr); column-gap:32px; row-gap:44px}
   .hist-band{display:block}
   .hist-nav{display:none}
   /* below 900px the rail turns upright: the node row leads each milestone and
@@ -1191,7 +1250,6 @@ select{appearance:none; background-image:linear-gradient(45deg,transparent 50%,v
   .photo-grid{grid-template-columns:repeat(2,1fr); gap:10px}
   .photo-grid--sparse{grid-template-columns:1fr}
   .grid-streams,.grid-values{grid-template-columns:1fr}
-  .aspects{grid-template-columns:1fr; row-gap:30px}
   .gallery{grid-template-columns:repeat(2,1fr); gap:12px}
   .lb{padding:14px}
   .lb-nav{padding:12px 11px; font-size:18px}
