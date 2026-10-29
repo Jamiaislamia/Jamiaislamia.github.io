@@ -501,41 +501,28 @@ code{font-family:var(--font-mono); font-size:.9em; background:var(--surface2); p
 .stream-card.is-soon .stream-desc{color:var(--muted2)}
 .stream-card.is-soon .stream-chips li{opacity:.85}
 
-/* ── Aspect sheet (Culture) — SIX PILLARS inside one card ─────────────
-   The six ideals used to be a flat 2×3 ledger of paragraphs: no entry
-   point, nothing anchoring the gold micro-label to its item, and a slack
-   band under the last row. They are now a Swiss matrix — three pillars
-   across, two down — and every cell opens with a 38px gold node carrying
-   a line icon, with the English label on the node's centre line so it can
-   never float free. `grid-auto-rows:1fr` forces both rows to the same
-   height, so the sheet ends on a straight edge however long a note runs.
-   One card, one accent, no nested cards (blueprint C15 / Part 11). */
+/* ── Culture sheet — SIX IDEALS, NO FRAME ─────────────────────────────
+   These six ideals were drawn inside one card and split by hairlines: a
+   box put around ideas, with a rule between each pair of them. The owner
+   asked for the opposite composition — the reference's free-standing
+   columns — so the card, the dividers and the icon node are all gone:
+   every pillar opens with a bare gold line icon, and the pillars are held
+   apart by whitespace alone.
+   The 3 × 2 rhythm and the equal rows STAY (`grid-auto-rows:1fr`): that is
+   what keeps the three icons of a row on one optical line however long a
+   note runs. Nothing in the sheet is a control, so nothing in it has a
+   hover state. */
 .aspects{
-  position:relative; z-index:1;
+  position:relative;
   display:grid; grid-template-columns:repeat(3,1fr); grid-auto-rows:1fr;
+  column-gap:44px; row-gap:52px;
 }
-.aspect{
-  display:flex; flex-direction:column;
-  padding:24px 22px; border-top:1px solid var(--border);
-  transition:background 150ms var(--ease);
-}
-/* the inner column rules, and no rule above the first row */
-.aspect:nth-child(3n+2),.aspect:nth-child(3n){border-left:1px solid var(--border)}
-.aspect:nth-child(-n+3){border-top:0}
-.aspect:hover{background:var(--surface2)}
-.asp-head{display:flex; align-items:center; gap:12px; margin-bottom:15px}
-.asp-node{
-  flex:0 0 auto; width:38px; height:38px; border-radius:50%;
-  display:flex; align-items:center; justify-content:center;
-  color:var(--gold); background:var(--surface2); border:1px solid var(--border2);
-  transition:color 200ms var(--ease), border-color 200ms var(--ease), background 200ms var(--ease);
-}
-.asp-node svg{width:20px; height:20px}
-.aspect .subj-en{margin-bottom:0}
-.aspect .value-title{font-size:18px; margin-bottom:7px}
-.aspect .value-desc{font-size:13px; line-height:1.8}
-/* hover recolours the cell and its node — it never moves them */
-.aspect:hover .asp-node{color:var(--gold-bright); border-color:var(--gold-edge); background:var(--gold-t)}
+.aspect{display:flex; flex-direction:column; min-width:0}
+.asp-icon{display:block; line-height:0; margin-bottom:18px; color:var(--gold)}
+.asp-icon svg{width:26px; height:26px}
+.aspect .subj-en{margin-bottom:11px}
+.aspect .value-title{font-size:19px; margin-bottom:8px}
+.aspect .value-desc{font-size:13px; line-height:1.85; max-width:36ch}
 
 /* ── Grids ──────────────────────────────────────────── */
 .grid{display:grid; gap:16px}
@@ -1137,13 +1124,9 @@ select{appearance:none; background-image:linear-gradient(45deg,transparent 50%,v
   .contact-ledger{grid-template-columns:1fr}
   .contact-col{padding:16px 20px; border-left:0; border-top:1px solid var(--border)}
   .contact-col:first-child{padding-top:20px; border-top:0}
-  /* culture pillars go 3-across → 2-across, and the inner rules are re-drawn
-     so no cell is left holding a hairline that no longer divides anything */
-  .aspects{grid-template-columns:repeat(2,1fr)}
-  .aspect:nth-child(3n+2),.aspect:nth-child(3n){border-left:0}
-  .aspect:nth-child(2n){border-left:1px solid var(--border)}
-  .aspect:nth-child(-n+3){border-top:1px solid var(--border)}
-  .aspect:nth-child(-n+2){border-top:0}
+  /* culture pillars go 3-across → 2-across. There are no rules to re-draw
+     any more: the gaps do the dividing, at every width. */
+  .aspects{grid-template-columns:repeat(2,1fr); column-gap:32px; row-gap:44px}
   .hist-band{display:block}
   .hist-nav{display:none}
   /* below 900px the rail turns upright: the node row leads each milestone and
@@ -1187,10 +1170,6 @@ select{appearance:none; background-image:linear-gradient(45deg,transparent 50%,v
   /* the mosaic goes uniform at 2-up: six photos = three full rows */
   .gal--feature{grid-column:auto; grid-row:auto}
   .gal--feature .gal-photo{flex:0 0 auto; aspect-ratio:4/3}
-  .aspects{grid-template-columns:1fr}
-  .aspect:nth-child(3n+2),.aspect:nth-child(3n),.aspect:nth-child(2n){border-left:0}
-  .aspect:nth-child(-n+3){border-top:1px solid var(--border)}
-  .aspect:first-child{border-top:0}
   .super-card{gap:22px}
   .super-photo{width:196px}
   .super-name{font-size:26px}
@@ -1212,6 +1191,7 @@ select{appearance:none; background-image:linear-gradient(45deg,transparent 50%,v
   .photo-grid{grid-template-columns:repeat(2,1fr); gap:10px}
   .photo-grid--sparse{grid-template-columns:1fr}
   .grid-streams,.grid-values{grid-template-columns:1fr}
+  .aspects{grid-template-columns:1fr; row-gap:30px}
   .gallery{grid-template-columns:repeat(2,1fr); gap:12px}
   .lb{padding:14px}
   .lb-nav{padding:12px 11px; font-size:18px}
@@ -1220,7 +1200,6 @@ select{appearance:none; background-image:linear-gradient(45deg,transparent 50%,v
   .stepper-title{font-size:16px}
   .stepper-desc{font-size:12px}
   .stepper-year{font-size:10px; letter-spacing:.1em; padding:3px 8px}
-  .aspect{padding:20px 18px}
 }
 
 /* Very narrow phones (≤430px): the brand name steps aside so the Apply button and
