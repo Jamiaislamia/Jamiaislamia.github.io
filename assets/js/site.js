@@ -257,6 +257,63 @@
     });
   }
 
+  /* ── Notices — the live bar under the header ────────────────
+     Reads /site/notices (public read). A notice whose expiresAt has passed
+     hides itself, so a forgotten notice never lingers. Any failure (offline,
+     empty, malformed) simply renders nothing — never an error on the page.
+     The notice itself is typed by the authority on /notice/, so every value
+     is escaped before it touches the DOM. */
+  var NOTICE_TAG = {
+    admission: 'ভর্তি চলছে',
+    hiring: 'শিক্ষক নিয়োগ',
+    closure: 'বন্ধ / ছুটি',
+    general: 'নোটিশ'
+  };
+
+  function escHtml(v) {
+    return String(v == null ? '' : v)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function initNotices() {
+    var host = document.getElementById('siteHeader');
+    if (!host || !host.parentNode) return;
+    var base = (window.SITE_LINKS || {}).rtdb;
+    if (!base || !window.fetch) return;
+
+    fetch(base + '/site/notices.json', { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (map) {
+        if (!map || typeof map !== 'object') return;
+        var now = Date.now();
+        var list = [];
+        Object.keys(map).forEach(function (k) {
+          var n = map[k] || {};
+          var text = n.text == null ? '' : String(n.text).trim();
+          if (!text) return;
+          if (n.expiresAt && new Date(n.expiresAt + 'T23:59:59').getTime() < now) return;
+          list.push({ id: k, text: text, tag: NOTICE_TAG[n.tag] ? n.tag : 'general' });
+        });
+        if (!list.length) return;
+        list.sort(function (a, b) { return a.id < b.id ? 1 : (a.id > b.id ? -1 : 0); });
+
+        var bar = document.createElement('div');
+        bar.className = 'notice-bar';
+        bar.setAttribute('role', 'status');
+        bar.setAttribute('aria-live', 'polite');
+        bar.innerHTML = list.slice(0, 2).map(function (n) {
+          return '<div class="notice-row">' +
+            '<span class="notice-tag ' + (n.tag === 'closure' ? 'is-warn' : 'is-open') + '">' +
+              escHtml(NOTICE_TAG[n.tag]) + '</span>' +
+            '<span class="notice-text">' + escHtml(n.text) + '</span>' +
+          '</div>';
+        }).join('');
+        host.parentNode.insertBefore(bar, host.nextSibling);
+      })
+      .catch(function () { /* a notice bar is optional; silence is correct */ });
+  }
+
   /* Nav highlight follows the section you are actually looking at */
   function initNavSpy() {
     var nav = document.getElementById('siteNav');
@@ -312,6 +369,7 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     buildHeader();
+    initNotices();
     buildFooter();
     initReveal();
     initCopy();

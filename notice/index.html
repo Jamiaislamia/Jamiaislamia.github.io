@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#090d12">
+<title>নোটিশ বোর্ড · Notice board</title>
+<link rel="icon" href="../assets/img/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Hind+Siliguri:wght@400;500;600;700&family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/site.css?v=20261029m">
+<style>
+  /* ── the notice board page — phone first, one column, big targets ── */
+  .nb-page{min-height:100vh; background:var(--bg)}
+  .nb-top{
+    position:sticky; top:0; z-index:20; background:var(--glass);
+    backdrop-filter:blur(14px) saturate(130%); border-bottom:1px solid var(--border);
+  }
+  .nb-top-in{
+    max-width:640px; margin:0 auto; padding:12px 16px;
+    display:flex; align-items:center; gap:12px;
+  }
+  .nb-back{
+    font-family:var(--font-mono); font-size:11px; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--muted); border:1px solid var(--border2); border-radius:var(--r-btn);
+    padding:9px 12px; white-space:nowrap;
+  }
+  .nb-back:hover{color:var(--text); border-color:var(--accent); background:var(--accent-t)}
+  .nb-brand{
+    font-family:var(--font-head); font-size:18px; color:var(--text); margin-right:auto;
+    display:flex; align-items:center; gap:8px;
+  }
+  .nb-brand b{
+    font-family:var(--font-mono); font-size:9px; font-weight:500; letter-spacing:.16em;
+    text-transform:uppercase; color:var(--gold); background:var(--gold-t);
+    border:1px solid var(--gold-edge); border-radius:var(--r-tag); padding:3px 7px;
+  }
+  .nb-out{
+    font-family:var(--font-mono); font-size:11px; letter-spacing:.06em;
+    color:var(--muted); background:transparent; border:0; padding:9px 4px; cursor:pointer;
+  }
+  .nb-out:hover{color:var(--crimson)}
+  .nb-wrap{max-width:640px; margin:0 auto; padding:18px 16px 64px; display:flex; flex-direction:column; gap:16px}
+  .nb-card{
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:var(--r-card); padding:18px;
+  }
+  .nb-card h1{font-family:var(--font-head); font-size:20px; margin-bottom:6px; color:var(--text)}
+  .nb-card h2{
+    font-family:var(--font-mono); font-size:10px; font-weight:500; letter-spacing:.16em;
+    text-transform:uppercase; color:var(--gold); margin-bottom:14px;
+  }
+  .nb-hint{font-size:12.5px; color:var(--muted); line-height:1.8; margin-bottom:16px}
+  .nb-page label{
+    display:block; margin-bottom:14px;
+    font-family:var(--font-mono); font-size:10px; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--muted);
+  }
+  .nb-page input, .nb-page select, .nb-page textarea{
+    display:block; width:100%; margin-top:7px;
+    background:var(--field); border:1px solid var(--border2); border-radius:var(--r-input);
+    padding:13px 14px; color:var(--text);
+    font-family:var(--font-body); font-size:16px; line-height:1.6;
+    text-transform:none; letter-spacing:0;
+  }
+  .nb-page textarea{min-height:104px; resize:vertical}
+  .nb-page input:focus, .nb-page select:focus, .nb-page textarea:focus{
+    outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-ring);
+  }
+  .nb-count{
+    font-family:var(--font-mono); font-size:10.5px; color:var(--muted2);
+    text-align:right; margin:-8px 0 12px;
+  }
+  .nb-btn{
+    width:100%; padding:15px 18px; border-radius:var(--r-btn); cursor:pointer;
+    font-family:var(--font-mono); font-size:13px; font-weight:500; letter-spacing:.08em;
+    text-transform:uppercase; background:var(--surface2); border:1px solid var(--border2);
+    color:var(--text); transition:background .18s, border-color .18s, color .18s;
+  }
+  .nb-btn:hover{border-color:var(--accent); color:var(--accent-d); background:var(--accent-t)}
+  .nb-btn:disabled{opacity:.55; cursor:not-allowed}
+  .nb-primary{background:var(--accent); border-color:var(--accent); color:var(--accent-ink); font-weight:600}
+  .nb-primary:hover{background:var(--accent-d); border-color:var(--accent-d); color:var(--accent-ink)}
+  .nb-row{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+  .nb-msg{
+    margin:0; padding:12px 14px; border-radius:var(--r-input);
+    font-size:13px; line-height:1.7; border:1px solid var(--border2); background:var(--surface2);
+    color:var(--body);
+  }
+  .nb-msg.is-ok{background:var(--teal-bg); border-color:var(--teal-edge); color:var(--teal)}
+  .nb-msg.is-err{background:var(--crimson-bg); border-color:var(--crimson-edge); color:var(--crimson)}
+  .nb-msg.is-busy{background:var(--amber-bg); border-color:var(--amber-edge); color:var(--amber)}
+  .nb-item{border-top:1px solid var(--border); padding:14px 0}
+  .nb-item:first-child{border-top:0; padding-top:0}
+  .nb-item.is-expired{opacity:.55}
+  .nb-item-head{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:8px}
+  .nb-tag{
+    font-family:var(--font-mono); font-size:9.5px; letter-spacing:.14em; text-transform:uppercase;
+    padding:4px 8px; border-radius:var(--r-tag); border:1px solid var(--border2); color:var(--muted);
+  }
+  .nb-tag.is-open{color:var(--teal); border-color:var(--teal-edge); background:var(--teal-bg)}
+  .nb-tag.is-warn{color:var(--amber); border-color:var(--amber-edge); background:var(--amber-bg)}
+  .nb-exp{font-family:var(--font-mono); font-size:9.5px; letter-spacing:.08em; color:var(--muted2)}
+  .nb-item-text{font-size:14.5px; line-height:1.85; color:var(--body); margin-bottom:10px; white-space:pre-wrap}
+  .nb-item-foot{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap}
+  .nb-meta{font-family:var(--font-mono); font-size:10px; letter-spacing:.06em; color:var(--muted2)}
+  .nb-del{
+    font-family:var(--font-mono); font-size:11px; letter-spacing:.06em; cursor:pointer;
+    padding:9px 14px; border-radius:var(--r-btn); white-space:nowrap;
+    color:var(--crimson); background:var(--crimson-bg); border:1px solid var(--crimson-edge);
+  }
+  .nb-del:hover{background:var(--crimson); color:#fff; border-color:var(--crimson)}
+  .nb-empty{font-size:13px; color:var(--muted); line-height:1.85}
+  .nb-empty b{color:var(--text)}
+  .nb-editor-head{display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom:14px}
+  .nb-who{font-family:var(--font-mono); font-size:10px; color:var(--muted2); word-break:break-all; text-align:right}
+  @media (max-width:430px){
+    .nb-brand{font-size:16px}
+    .nb-brand b{display:none}
+    .nb-row{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body class="nb-page">
+
+<header class="nb-top">
+  <div class="nb-top-in">
+    <a class="nb-back" href="../">← ওয়েবসাইট</a>
+    <span class="nb-brand">নোটিশ বোর্ড <b>Notice</b></span>
+    <button class="nb-out" id="nbOut" type="button" hidden>লগআউট</button>
+  </div>
+</header>
+
+<main class="nb-wrap">
+
+  <!-- ── sign in (an approved institute account) ── -->
+  <section class="nb-card" id="nbLogin" hidden>
+    <h1>অনুমোদিত লগইন</h1>
+    <p class="nb-hint">
+      শুধু প্রতিষ্ঠানের অনুমোদিত (approved) অ্যাকাউন্ট নোটিশ দিতে পারবে। অ্যাডমিন প্যানেলে যে ইমেইল ও
+      পাসওয়ার্ড দিয়ে লগইন করেন, সেটিই ব্যবহার করুন। একবার লগইন করলে এই ফোনে মনে থাকবে।
+    </p>
+    <label>ইমেইল
+      <input id="nbEmail" type="email" inputmode="email" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="name@example.com">
+    </label>
+    <label>পাসওয়ার্ড
+      <input id="nbPass" type="password" autocomplete="current-password" placeholder="••••••••">
+    </label>
+    <button class="nb-btn nb-primary" id="nbLoginBtn" type="button">লগইন</button>
+  </section>
+
+  <!-- ── composer ── -->
+  <section class="nb-card" id="nbEditor" hidden>
+    <div class="nb-editor-head">
+      <h1>নতুন নোটিশ</h1>
+      <span class="nb-who" id="nbWho"></span>
+    </div>
+    <label>নোটিশের লেখা
+      <textarea id="nbText" maxlength="600" placeholder="যেমন: ভর্তি চলছে — ২০২৭ সেশনে আগ্রহী শিক্ষার্থীদের ভর্তি চলছে।"></textarea>
+    </label>
+    <div class="nb-count" id="nbCount">০ / ৬০০</div>
+    <div class="nb-row">
+      <label>ধরন
+        <select id="nbTag"></select>
+      </label>
+      <label>শেষ তারিখ (ঐচ্ছিক)
+        <input id="nbExpire" type="date">
+      </label>
+    </div>
+    <button class="nb-btn nb-primary" id="nbPublish" type="button">প্রকাশ করুন</button>
+  </section>
+
+  <p class="nb-msg" id="nbMsg" hidden></p>
+
+  <!-- ── what is live right now ── -->
+  <section class="nb-card">
+    <h2>প্রকাশিত নোটিশ</h2>
+    <div id="nbList"></div>
+  </section>
+
+</main>
+
+<script src="../assets/js/site-links.js"></script>
+<script src="../assets/js/notice-board.js?v=20261029"></script>
+</body>
+</html>

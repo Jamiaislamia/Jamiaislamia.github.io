@@ -21,6 +21,10 @@ window.SITE_LINKS = {
   /* Teacher application form (Firebase Hosting) */
   teacherForm: 'https://jamiaislamia.web.app/teacher-form/',
 
+  /* Realtime Database base — read by the notice bar on every page, and written
+     by the notice board (/notice/) after an approved login. */
+  rtdb: 'https://sms-admission-4f632-default-rtdb.asia-southeast1.firebasedatabase.app',
+
   /* Campus location — every "Find us here" link uses this one URL */
   mapUrl: 'https://maps.app.goo.gl/WCHuTP543BiybpHY9',
 
