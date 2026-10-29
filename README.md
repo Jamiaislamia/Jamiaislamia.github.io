@@ -26,7 +26,7 @@ The two application buttons no longer sit in the hero, and the old dropdown is g
 carries **one** compact button, bottom-right of the bar: **“আবেদন · Apply →”**, 34px tall (the same
 height as the logo and the nav rows, so the bar never grows a second baseline), on a teal tint with
 a teal hairline at rest and a solid teal fill on hover / keyboard focus. It opens
-`SITE_LINKS.applyPortal` — the GitHub-hosted **application portal** (student form, teacher form and
+`SITE_LINKS.applyPortal` — the **Firebase-hosted application portal** (student form, teacher form and
 the status checker, one page) — in a new tab; while that key is empty it falls back to
 `SITE_LINKS.studentForm`, so the button is never dead. On phones the English suffix is dropped and
 the button tightens to 32px.
@@ -62,12 +62,12 @@ the button tightens to 32px.
 | `index.html` | **Institute home** — logo & hero, heritage/history (established 2003), **yearly history timeline (`#history`, one column: filter chips + year row, 4 newest + “Show all”)**, mission & values, **streams** (`#streams`: four equal cards — General and Hifzul Qur’an live, Science and Commerce soon), **campus mosaic** (`#campus`: first photo is the 2×2 feature), culture (`.aspects` spec sheet), contact ledger |
 | `teachers.html` | **Our Teachers** — the **সুপার** (head teacher) in a dedicated card, then every teacher with photo, subjects and qualification (`teachers.json`) |
 | `explore.html` | **Explore** — photo collections, one section per album, click any photo for a full-screen lightbox (← → / Esc) |
-| `apply-student.html` · `apply-teacher.html` | **Built-in fallback forms** (nothing links to them while the GitHub form is configured) — each posts to Firebase (`/admissions`, `/teacher-applications`) and carries the inline status tracker |
+| `apply-student.html` · `apply-teacher.html` | **Built-in fallback forms** (nothing links to them while the hosted form is configured) — each posts to Firebase (`/admissions`, `/teacher-applications`) and carries the inline status tracker |
 
 ## 🔗 Apply flow — one portal, three doors
 
-The application entry point is a **separate GitHub Pages page** (`apply-portal/` in this project,
-published as its own repository). The header's Apply button opens it:
+The application entry point is a **separate page on Firebase Hosting** (`apply-portal/` in this project,
+published by `_build_firebase_release.js` → `firebase deploy --only hosting`). The header's Apply button opens it:
 
 | Where | Button | Target |
 |---|---|---|
@@ -82,9 +82,9 @@ accepts both `APP-…` and `TCH-…` — so no application form is implemented i
 
 ```js
 window.SITE_LINKS = {
-  applyPortal: 'https://jamiaislamia.github.io/apply-portal/', /* header Apply button + Track links */
-  studentForm: 'https://jamiaislamia.github.io/admission-form/',
-  teacherForm: 'https://jamiaislamia.github.io/teacher-form/',
+  applyPortal: 'https://sms-admission-4f632.web.app/apply-portal/', /* header Apply button + Track links */
+  studentForm: 'https://sms-admission-4f632.web.app/admission-form/',
+  teacherForm: 'https://sms-admission-4f632.web.app/teacher-form/',
   mapUrl: 'https://maps.app.goo.gl/WCHuTP543BiybpHY9' /* every "Find us here" link */
 };
 ```
