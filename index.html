@@ -11,12 +11,16 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <meta name="theme-color" content="#090d12">
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400&family=DM+Mono:wght@400;500&family=Inter+Tight:wght@500;600;700&family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/site.css?v=20261029b">
-<script src="assets/js/prefs.js"></script>
+<link rel="stylesheet" href="assets/css/site.css?v=20261029c">
+<script src="assets/js/prefs.js?v=20261029c"></script>
 </head>
 <body>
 
+<a class="skip-link" href="#main">মূল অংশে যান · Skip to content</a>
+
 <header class="site-header" id="siteHeader"></header>
+
+<main id="main">
 
 <!-- ══════════ HERO ══════════ -->
 <section class="hero">
@@ -61,7 +65,7 @@
       </div>
     </div>
 
-    <article class="card rv" style="margin-top:14px">
+    <article class="card rv">
       <div class="card-pad">
         <div class="form-sec-title">ঐতিহ্য ও ইতিহাস</div>
         <div class="narrative">
@@ -74,7 +78,7 @@
       </div>
     </article>
 
-    <div class="grid grid-values" style="margin-top:14px">
+    <div class="grid grid-values">
       <article class="card rv"><div class="card-pad">
         <div class="subj-en" lang="en">MISSION</div>
         <div class="value-title">আমাদের লক্ষ্য</div>
@@ -108,7 +112,7 @@
          numbered circle) on one side of the line and the story on the other,
          alternating, walked with an arrow at each end of the line (history.js) -->
     <div class="hist-feed" id="historyTimeline" aria-live="polite">
-      <p style="color:var(--muted)">ধারাবাহিকতা লোড হচ্ছে…</p>
+      <p class="loading-note">ধারাবাহিকতা লোড হচ্ছে…</p>
     </div>
   </section>
 
@@ -203,7 +207,7 @@
 
     <!-- two columns of reasons, each a vertical icon timeline (different.js) -->
     <div class="why-grid rv" id="differentGrid" aria-live="polite">
-      <p style="color:var(--muted)">লোড হচ্ছে…</p>
+      <p class="loading-note">লোড হচ্ছে…</p>
     </div>
   </section>
 
@@ -218,27 +222,27 @@
     <p class="sec-en rv" lang="en">A campus built for study, prayer and rest — in Brahmanpara, Cumilla.</p>
     <div class="gallery">
       <figure class="gal gal--feature rv">
-        <div class="gal-photo gal-photo--img"><img src="Photos/Campus/campus.jpg" alt="জামিয়া ইসলামিয়া মাদরাসা — ক্যাম্পাস" loading="lazy"></div>
+        <div class="gal-photo gal-photo--img"><img src="Photos/Campus/campus.jpg" alt="জামিয়া ইসলামিয়া মাদরাসা — ক্যাম্পাস" width="1000" height="751" loading="lazy" decoding="async"></div>
         <figcaption class="gal-cap"><b lang="en">CAMPUS</b>প্রতিষ্ঠানের মূল ভবন ও আঙিনা</figcaption>
       </figure>
       <figure class="gal rv">
-        <div class="gal-photo gal-photo--img"><img src="Photos/Students/students-1.jpg" alt="শ্রেণিকক্ষে শিক্ষার্থীরা" loading="lazy"></div>
+        <div class="gal-photo gal-photo--img"><img src="Photos/Students/students-1.jpg" alt="শ্রেণিকক্ষে শিক্ষার্থীরা" width="1000" height="750" loading="lazy" decoding="async"></div>
         <figcaption class="gal-cap"><b lang="en">STUDENTS</b>শ্রেণিকক্ষে পাঠ ও অনুশীলন</figcaption>
       </figure>
       <figure class="gal rv">
-        <div class="gal-photo gal-photo--img"><img src="Photos/Students/students-2.jpg" alt="মাদরাসার শিক্ষার্থীরা" loading="lazy"></div>
+        <div class="gal-photo gal-photo--img"><img src="Photos/Students/students-2.jpg" alt="মাদরাসার শিক্ষার্থীরা" width="1000" height="750" loading="lazy" decoding="async"></div>
         <figcaption class="gal-cap"><b lang="en">STUDENTS</b>সহপাঠীদের সাথে শিক্ষা ও শৃঙ্খলার পরিবেশ</figcaption>
       </figure>
       <figure class="gal rv">
-        <div class="gal-photo gal-photo--img"><img src="Photos/Mosque/mosque.jpg" alt="মাদরাসার মসজিদ" loading="lazy"></div>
+        <div class="gal-photo gal-photo--img"><img src="Photos/Mosque/mosque.jpg" alt="মাদরাসার মসজিদ" width="1000" height="750" loading="lazy" decoding="async"></div>
         <figcaption class="gal-cap"><b lang="en">MOSQUE</b>জামাতে নামাজ ও কুরআন তিলাওয়াতের স্থান</figcaption>
       </figure>
       <figure class="gal rv">
-        <div class="gal-photo gal-photo--img"><img src="Photos/Events/event-1.jpg" alt="প্রতিষ্ঠানের ইসলামি আয়োজন" loading="lazy"></div>
+        <div class="gal-photo gal-photo--img"><img src="Photos/Events/event-1.jpg" alt="প্রতিষ্ঠানের ইসলামি আয়োজন" width="1000" height="752" loading="lazy" decoding="async"></div>
         <figcaption class="gal-cap"><b lang="en">EVENTS</b>প্রতিষ্ঠানের অনুষ্ঠান ও ইসলামি আয়োজন</figcaption>
       </figure>
       <figure class="gal rv">
-        <div class="gal-photo gal-photo--img"><img src="Photos/Events/event-2.jpg" alt="শিক্ষার্থীদের প্রতিযোগিতা ও সমাবেশ" loading="lazy"></div>
+        <div class="gal-photo gal-photo--img"><img src="Photos/Events/event-2.jpg" alt="শিক্ষার্থীদের প্রতিযোগিতা ও সমাবেশ" width="1000" height="752" loading="lazy" decoding="async"></div>
         <figcaption class="gal-cap"><b lang="en">EVENTS</b>প্রতিযোগিতা ও সমাবেশ</figcaption>
       </figure>
     </div>
@@ -357,13 +361,15 @@
 
 </div>
 
+</main>
+
 <footer class="site-footer" id="siteFooter"></footer>
 
-<script src="assets/js/site-links.js"></script>
-<script src="assets/js/social-icons.js"></script>
-<script src="assets/js/i18n.js"></script>
-<script src="assets/js/site.js"></script>
-<script src="assets/js/history.js?v=20261029"></script>
-<script src="assets/js/different.js?v=20261029"></script>
+<script src="assets/js/site-links.js?v=20261029c"></script>
+<script src="assets/js/social-icons.js?v=20261029c"></script>
+<script src="assets/js/i18n.js?v=20261029c"></script>
+<script src="assets/js/site.js?v=20261029c"></script>
+<script src="assets/js/history.js?v=20261029c"></script>
+<script src="assets/js/different.js?v=20261029c"></script>
 </body>
 </html>

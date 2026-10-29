@@ -44,7 +44,9 @@
     var portal = (window.SITE_LINKS || {}).applyPortal || forms.student;
     var links = NAV.map(function (item) {
       var target = item[0].split('#')[0];
-      var active = (target === page && item[0].indexOf('#') === -1) ? ' class="active"' : '';
+      /* the current page link is marked for assistive tech as well as painted:
+         `.active` is the visual state, `aria-current="page"` is the semantic one */
+      var active = (target === page && item[0].indexOf('#') === -1) ? ' class="active" aria-current="page"' : '';
       /* Bangla label only — the English name is the hover/AT label, so the
          bar never reads as a translation table. */
       return '<a href="' + item[0] + '"' + active + ' title="' + item[2] +
@@ -277,8 +279,13 @@
     });
     if (!sections.length) return;          /* other pages keep the page-level highlight */
 
-    function clearActive() { links.forEach(function (a) { a.classList.remove('active'); }); }
-    function setActive(a) { clearActive(); if (a) a.classList.add('active'); }
+    /* the section spy moves BOTH the visual state and the semantic one, so a
+       screen reader hears which section the nav is currently pointing at */
+    function clearActive() { links.forEach(function (a) { a.classList.remove('active'); a.removeAttribute('aria-current'); }); }
+    function setActive(a) {
+      clearActive();
+      if (a) { a.classList.add('active'); a.setAttribute('aria-current', 'true'); }
+    }
 
     function update() {
       var y = window.pageYOffset || document.documentElement.scrollTop || 0;
