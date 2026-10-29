@@ -463,43 +463,63 @@ code{font-family:var(--font-mono); font-size:.9em; background:var(--surface2); p
 .card:hover::before{width:100%}
 .card:hover::after{opacity:1}
 
-/* ── Streams — FOUR equal cards (owner request: 2 live + 2 upcoming, each a
-   card of its own instead of one feature beside a merged 3-row panel).
-   Every card is a flex column, so the footer rule lands at the same height
-   in all four and the subject chips absorb the spare space — that is what
-   removes the dead band the stretched feature card used to show. */
+/* ── Streams — FOUR cards on the owner's PRICING-SHEET anatomy ────────
+   The reference (2026-10-29) is a pricing sheet: a small accent line, the
+   headline, ONE full-width action, then the features as a list — every row
+   with a circular check. That order and that hierarchy are what is adopted.
+   NOT adopted: the reference's pill radius (Part 4.4 — controls are 4px) and
+   its per-card accent tint; all four cards keep the site's one accent on one
+   surface, and the status tags carry the difference.
+   The two LIVE streams hold the action; the two that open later hold the SAME
+   control in the SAME slot, `disabled` — the row still lines up and nothing
+   offers an action that does not exist. The signature 40px accent bar and the
+   5px hover lift come from `.card` and are untouched. */
 .stream-grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); grid-auto-rows:1fr; gap:16px}
 .stream-card{display:flex}
 .stream-card .card-pad{flex:1; display:flex; flex-direction:column; padding:22px}
-.stream-head{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px}
+/* the card's top line: the accent eyebrow, with the status tag at its right */
+.stream-head{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:15px}
+.stream-eyebrow{
+  min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  font-family:var(--font-mono); font-size:9.5px; line-height:1.4;
+  letter-spacing:.18em; text-transform:uppercase; color:var(--accent-d);
+}
 .stream-title{
-  font-family:var(--font-head); font-weight:600; font-size:21px; line-height:1.3;
+  font-family:var(--font-head); font-weight:600; font-size:23px; line-height:1.3;
   color:var(--text); margin-bottom:8px;
 }
 .stream-title span{
-  display:block; margin-top:4px;
+  display:block; margin-top:5px;
   font-family:var(--font-mono); font-size:10px; font-weight:400;
   letter-spacing:.14em; text-transform:uppercase; color:var(--muted2);
 }
-.stream-desc{font-size:13px; color:var(--muted); line-height:1.8; margin-bottom:16px; max-width:44ch}
-.stream-chips{list-style:none; display:flex; flex-wrap:wrap; gap:6px; margin-bottom:18px}
-.stream-chips li{
-  font-family:var(--font-mono); font-size:10px; letter-spacing:.06em; color:var(--muted);
-  background:var(--surface2); border:1px solid var(--border); border-radius:4px; padding:4px 8px;
+/* the note holds two lines of air on all four cards, so the action and the
+   first check row land on the same y across a row — that alignment is what
+   makes the four cards read as one sheet (the reference does it by having
+   equal-length feature lists; the streams do not have those) */
+.stream-desc{font-size:13px; color:var(--muted); line-height:1.8; min-height:3.6em; margin-bottom:18px; max-width:46ch}
+/* the one action — full width of the card's own measure, never a pill */
+.stream-cta{width:100%; justify-content:center; text-align:center; flex:none; margin-bottom:20px}
+/* the subjects: rows with a check ring, not chips — the ring is the mark and
+   the subject name is the label (the ring is `aria-hidden` in the markup) */
+.stream-list{list-style:none; display:flex; flex-direction:column; gap:11px}
+.stream-list li{
+  display:flex; align-items:center; gap:10px;
+  font-family:var(--font-mono); font-size:12px; line-height:1.5; letter-spacing:.02em;
+  color:var(--body);
 }
-.stream-chip-more{color:var(--muted2); background:transparent; border-style:dashed}
-.stream-foot{
-  margin-top:auto; padding-top:14px; border-top:1px solid var(--border);
-  display:flex; align-items:center; justify-content:space-between; gap:12px;
+.stream-check{
+  flex:none; width:18px; height:18px; display:inline-flex; align-items:center; justify-content:center;
+  border:1px solid var(--accent-edge); border-radius:50%;
+  background:var(--accent-t); color:var(--accent-d);
 }
-.stream-meta{
-  font-family:var(--font-mono); font-size:9.5px; letter-spacing:.12em;
-  text-transform:uppercase; color:var(--muted2);
-  min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-}
+.stream-check svg{width:10px; height:10px; display:block}
+.stream-list-more{color:var(--muted2)}
+.stream-list-more .stream-check{border-color:var(--border2); background:transparent; color:var(--muted2)}
+.stream-card.is-soon .stream-eyebrow{color:var(--muted)}
 .stream-card.is-soon .stream-title{color:var(--muted)}
 .stream-card.is-soon .stream-desc{color:var(--muted2)}
-.stream-card.is-soon .stream-chips li{opacity:.85}
+.stream-card.is-soon .stream-check{border-color:var(--border2); background:var(--surface2); color:var(--muted2)}
 
 /* ── Culture — the SIX-STOP RAIL ──────────────────────────────────────
    The owner's reference is a vertical infographic: ONE connector line, the
@@ -1223,7 +1243,10 @@ select{appearance:none; background-image:linear-gradient(45deg,transparent 50%,v
   .eyebrow{white-space:normal}
   .sec-rule{min-width:100%}
   .grid-streams,.grid-values,.gallery,.photo-grid{grid-template-columns:repeat(2,1fr)}
-  .stream-grid{grid-template-columns:1fr}
+  /* one column: the cards take their OWN height again — `1fr` rows exist to
+     line two cards up side by side, and stacking them only opens a band of
+     empty card under every short list */
+  .stream-grid{grid-template-columns:1fr; grid-auto-rows:auto}
   .why-grid{grid-template-columns:1fr; gap:0}
   .footer-nav{grid-template-columns:1fr 1fr; gap:16px 20px}
   /* the mosaic goes uniform at 2-up: six photos = three full rows */
