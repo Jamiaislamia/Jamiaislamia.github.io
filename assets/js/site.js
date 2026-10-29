@@ -228,6 +228,115 @@
     });
   }
 
+  /* ── Button label roll (text only) ─────────────────────────────
+     Mimics the Uiverse "span-mother" letter roll (KINGFRESS) without any of its
+     geometry: that template pins the button to 95×42 and lets the label leave
+     the flow on hover, which on an auto-width pill would collapse the control.
+     Blueprint C4 / Part 4.7 are explicit that a button never moves on hover — it
+     only recolours — so the motion stays inside the label, on the glyphs.
+
+     Each label text node becomes TWO identical rows stacked in one grid cell
+     (see `.t-roll` in site.css). The copy row is aria-hidden, so the accessible
+     name is still exactly the plain label and no aria-label is invented.
+
+     Bangla is an abugida: splitting it per character detaches matras and breaks
+     conjuncts (a lesson already paid for on the ribbon wordmark), so a Bangla
+     word travels as ONE shaped token — the Latin part of the same label still
+     rolls letter by letter. */
+  var ROLL_INDEX_CAP = 10;                                  /* same capping idea as initReveal() */
+  var ROLL_BN = /[\u0980-\u09FF\u200C\u200D]/;
+  var ROLL_BN_RUN = /([\u0980-\u09FF\u200C\u200D]+)/;
+
+  var rollSeg = null;
+  try {
+    if (typeof Intl !== 'undefined' && Intl.Segmenter) {
+      rollSeg = new Intl.Segmenter('bn', { granularity: 'grapheme' });
+    }
+  } catch (e) { rollSeg = null; }
+
+  function rollGraphemes(str) {
+    if (rollSeg) return Array.from(rollSeg.segment(str), function (s) { return s.segment; });
+    return Array.from(str);
+  }
+
+  function rollTokens(text) {
+    var out = [];
+    String(text).split(ROLL_BN_RUN).forEach(function (part) {
+      if (!part) return;
+      if (ROLL_BN.test(part)) { out.push(part); return; }   /* one shaped Bangla word */
+      rollGraphemes(part).forEach(function (g) { out.push(g); });
+    });
+    return out;
+  }
+
+  function rollEsc(str) {
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function rollRow(tokens, cls, hidden) {
+    var html = '<span class="t-roll-row ' + cls + '"' + (hidden ? ' aria-hidden="true"' : '') + '>';
+    tokens.forEach(function (t, i) {
+      /* --i is the stagger index; a dynamic value, the one kind of inline style
+         Part 4.10 allows. It is capped so a 16-token label still lands together. */
+      html += '<span class="t-roll-u" style="--i:' + Math.min(i, ROLL_INDEX_CAP) + '">' + rollEsc(t) + '</span>';
+    });
+    return html + '</span>';
+  }
+
+  /* Every text node of the control — skipping decoration (the Apply caret is
+     aria-hidden) and anything already wrapped. */
+  function rollTextNodes(root, out) {
+    Array.prototype.forEach.call(root.childNodes, function (node) {
+      if (node.nodeType === 3) { if (/\S/.test(node.nodeValue)) out.push(node); return; }
+      if (node.nodeType !== 1) return;
+      var tag = node.tagName.toLowerCase();
+      if (tag === 'svg' || tag === 'script' || tag === 'style') return;
+      if (node.getAttribute('aria-hidden') === 'true') return;
+      if (node.classList && node.classList.contains('t-roll')) return;
+      rollTextNodes(node, out);
+    });
+    return out;
+  }
+
+  function rollBuild(btn) {
+    if (btn.getAttribute('data-roll') === 'busy') return false;
+    btn.setAttribute('data-roll', 'busy');
+    var wrapped = 0;
+    rollTextNodes(btn, []).forEach(function (node) {
+      var tokens = rollTokens(node.nodeValue);
+      if (!tokens.length) return;
+      var host = document.createElement('span');
+      host.innerHTML = '<span class="t-roll">' +
+        rollRow(tokens, 't-roll-a', false) + rollRow(tokens, 't-roll-b', true) + '</span>';
+      var frag = document.createDocumentFragment();
+      while (host.firstChild) frag.appendChild(host.firstChild);
+      if (node.parentNode) { node.parentNode.replaceChild(frag, node); wrapped++; }
+    });
+    btn.setAttribute('data-roll', '1');
+    btn.__rollWrapped = wrapped > 0;
+    return btn.__rollWrapped;
+  }
+
+  function initButtonRoll() {
+    Array.prototype.forEach.call(document.querySelectorAll('.btn, .apply-btn'), function (btn) {
+      rollBuild(btn);
+      if (!window.MutationObserver) return;
+      /* The apply scripts rewrite a label in place — `btn.textContent =
+         'জমা হচ্ছে… · Submitting…'` on submit, then back on failure — which throws
+         the two rows away. Put them back, so the roll survives submit / retry /
+         reset instead of silently dying on the page's most important button.
+         `__rollWrapped` stops the observer from re-firing on a label that has
+         nothing to wrap (an empty label would otherwise loop forever). */
+      var mo = new MutationObserver(function () {
+        if (btn.getAttribute('data-roll') === 'busy') return;
+        if (!btn.__rollWrapped) return;
+        if (!btn.querySelector('.t-roll')) rollBuild(btn);
+      });
+      mo.observe(btn, { childList: true, subtree: true });
+    });
+  }
+  window.__siteButtonRoll = initButtonRoll;
+
   /* Any [data-apply-link="student|teacher"] anchor follows the configured URL */
   function initApplyLinks() {
     var forms = formLinks();
@@ -314,6 +423,7 @@
     buildHeader();
     buildFooter();
     initReveal();
+    initButtonRoll();          /* label roll needs buildHeader() to exist first */
     initCopy();
     initApplyLinks();
     initMapLinks();

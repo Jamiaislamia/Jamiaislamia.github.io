@@ -391,6 +391,46 @@ code{font-family:var(--font-mono); font-size:.9em; background:var(--surface2); p
 .btn-sm{padding:9px 16px; font-size:11.5px}
 .btn[disabled]{opacity:.55; cursor:not-allowed}
 
+/* ── Button label roll (text only) ─────────────────────
+   Mimics the Uiverse "span-mother" letter roll (KINGFRESS) with none of its
+   geometry. The template sizes itself for a fixed 95×42 box and takes the label
+   OUT of the flow on hover, which on an auto-width pill would collapse the
+   button — and C4 / Part 4.7 are explicit that a button never moves on hover,
+   it only recolours. So the roll happens strictly on the glyphs: each label
+   text node is replaced by two identical rows stacked in ONE grid cell, and the
+   box clips them. The button's width, height, radius, border, shadow and every
+   colour state stay exactly what they were (JS adds no class to `.btn`).
+
+   Clip room is measured, not decorative: Bangla ink is taller than the Latin em
+   box and `.apply-btn` runs `line-height:1`, so the clip box carries a .18em
+   bleed on both sides (cancelled in layout by an equal negative margin), and the
+   roll travels `100%` of the line box PLUS `.4em` — `100%` alone would leave the
+   first pixel rows of a tight-line-height label visible inside the bleed. */
+.t-roll{
+  display:inline-grid; grid-template-areas:"roll";
+  overflow:hidden;
+  padding-block:.18em; margin-block:-.18em;
+}
+/* both rows sit in the same cell, so the wrapper is exactly one label wide and
+   tall and swapping them can never change the button's size. `pre` keeps a
+   space token's advance (a whitespace-only box would otherwise collapse). */
+.t-roll-row{grid-area:roll; display:flex; white-space:pre}
+/* one glyph (Latin) or one shaped word (Bangla). The stagger rides on --i, the
+   token's index, capped in JS: duration stays inside the 150–200ms micro band. */
+.t-roll-u{display:block; transition:transform 190ms var(--ease) calc(var(--i,0) * 24ms)}
+/* the copy waits one line above the clip… */
+.t-roll-b .t-roll-u{transform:translateY(calc(-100% - .4em))}
+/* …and takes the outgoing copy's place on hover or keyboard focus. Disabled
+   buttons are excluded: a parked control must not invite the eye. */
+.btn:not([disabled]):hover .t-roll-a .t-roll-u,
+.btn:not([disabled]):focus-visible .t-roll-a .t-roll-u,
+.apply-btn:hover .t-roll-a .t-roll-u,
+.apply-btn:focus-visible .t-roll-a .t-roll-u{transform:translateY(calc(100% + .4em))}
+.btn:not([disabled]):hover .t-roll-b .t-roll-u,
+.btn:not([disabled]):focus-visible .t-roll-b .t-roll-u,
+.apply-btn:hover .t-roll-b .t-roll-u,
+.apply-btn:focus-visible .t-roll-b .t-roll-u{transform:translateY(0)}
+
 /* ── Cards ────────────────────────────────────────────
    Hover law (blueprint Part 4.7 + the C1 state row): grid cards lift 5px, the
    hairline turns accent, the signature accent bar runs from its 40px stub to
@@ -1200,4 +1240,11 @@ select{appearance:none; background-image:linear-gradient(45deg,transparent 50%,v
      animation that has no name) and the wordmark simply stays open. */
   .brand-name{animation:none; max-width:none; opacity:1}
   .brand-sub{animation:none; opacity:1; transform:none}
+  /* The label roll is decoration as well: no translation, no clone row, no clip
+     — the label is just the label. Stated here instead of leaning on the global
+     `.01ms` shim, which would swap two identical rows instantly (correct, but
+     only by accident of the copy being identical). */
+  .t-roll{overflow:visible; padding-block:0; margin-block:0}
+  .t-roll-b{display:none}
+  .t-roll-a .t-roll-u{transform:none}
 }
