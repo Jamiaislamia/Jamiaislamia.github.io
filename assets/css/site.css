@@ -233,6 +233,8 @@ code{font-family:var(--font-mono); font-size:.9em; background:var(--surface2); p
    block in an otherwise quiet bar. */
 .apply-wrap{position:relative; margin-left:2px; flex-shrink:0}
 .apply-btn{
+  --fill:var(--accent);
+  position:relative; isolation:isolate; overflow:hidden;
   display:inline-flex; align-items:center; justify-content:center; gap:7px;
   height:44px; padding:0 15px; white-space:nowrap;
   font-family:var(--font-mono); font-size:12px; font-weight:500; letter-spacing:.06em;
@@ -242,7 +244,8 @@ code{font-family:var(--font-mono); font-size:.9em; background:var(--surface2); p
   box-shadow:none;
   transition:background .18s, border-color .18s, color .18s;
 }
-.apply-btn:hover,.apply-btn:focus-visible{background:var(--accent); border-color:var(--accent); color:var(--accent-ink)}
+/* the accent fill arrives as the corner disc (`.btn::before` / `.apply-btn::before`) */
+.apply-btn:hover,.apply-btn:focus-visible{border-color:var(--accent); color:var(--accent-ink)}
 .apply-btn:active{transform:translateY(1px)}
 .apply-caret{font-size:10.5px; opacity:.95; transition:transform .2s var(--ease)}
 .apply-btn-en{font-size:9.5px; letter-spacing:.08em; text-transform:none; opacity:.8}
@@ -376,6 +379,8 @@ code{font-family:var(--font-mono); font-size:.9em; background:var(--surface2); p
 
 /* ── Buttons ────────────────────────────────────────── */
 .btn{
+  --fill:var(--accent);              /* the disc that sweeps in on hover */
+  position:relative; isolation:isolate; overflow:hidden;
   display:inline-flex; align-items:center; gap:9px;
   min-height:44px;
   font-family:var(--font-mono); font-size:13px; font-weight:500; letter-spacing:.08em; text-transform:uppercase;
@@ -384,52 +389,53 @@ code{font-family:var(--font-mono); font-size:.9em; background:var(--surface2); p
   box-shadow:none;
   transition:background .18s, border-color .18s, color .18s, transform .18s;
 }
-.btn:hover{border-color:var(--accent); color:var(--accent-d); background:var(--accent-t)}
+.btn:hover{border-color:var(--accent); color:var(--accent-ink)}
 .btn:active{transform:translateY(1px)}
-.btn-primary{background:var(--accent); border-color:var(--accent); color:var(--accent-ink); font-weight:500; box-shadow:0 12px 26px -16px var(--accent-glow)}
-.btn-primary:hover{background:var(--accent-d); border-color:var(--accent-d); color:var(--accent-ink)}
+.btn-primary{--fill:var(--accent-d); background:var(--accent); border-color:var(--accent); color:var(--accent-ink); font-weight:500; box-shadow:0 12px 26px -16px var(--accent-glow)}
+/* an already-solid button still has to *show* a sweep, so its disc is the
+   brighter hover tone the button used to fade to — same end state, new path */
+.btn-primary:hover{border-color:var(--accent-d)}
 .btn-sm{padding:9px 16px; font-size:11.5px}
 .btn[disabled]{opacity:.55; cursor:not-allowed}
 
-/* ── Button label roll (text only) ─────────────────────
-   Mimics the Uiverse "span-mother" letter roll (KINGFRESS) with none of its
-   geometry. The template sizes itself for a fixed 95×42 box and takes the label
-   OUT of the flow on hover, which on an auto-width pill would collapse the
-   button — and C4 / Part 4.7 are explicit that a button never moves on hover,
-   it only recolours. So the roll happens strictly on the glyphs: each label
-   text node is replaced by two identical rows stacked in ONE grid cell, and the
-   box clips them. The button's width, height, radius, border, shadow and every
-   colour state stay exactly what they were (JS adds no class to `.btn`).
+/* ── Button hover: the corner disc sweep ───────────────
+   After the Uiverse button by "yaasiinaxmed" — a ::before disc parked at the
+   bottom-right corner that travels over the face on hover. The sweep is kept;
+   the template's measurements are not: a fixed 6em × 2.6em button, a 150 × 200px
+   disc and #0077ff belong to a 17px standalone demo, not to a 44px-high
+   auto-width control on one token-based accent.
 
-   Clip room is measured, not decorative: Bangla ink is taller than the Latin em
-   box and `.apply-btn` runs `line-height:1`, so the clip box carries a .18em
-   bleed on both sides (cancelled in layout by an equal negative margin), and the
-   roll travels `100%` of the line box PLUS `.4em` — `100%` alone would leave the
-   first pixel rows of a tight-line-height label visible inside the bleed. */
-.t-roll{
-  display:inline-grid; grid-template-areas:"roll";
-  overflow:hidden;
-  padding-block:.18em; margin-block:-.18em;
+   Why these numbers:
+   · `width:280%` is derived, not guessed — and the FIRST derivation was wrong:
+     at 240% every wide button was covered, but the 70px-wide header CTA at
+     390px came out radius 81.6px against a far corner at 82.7px, one pixel
+     short, which reads as a smear rather than a sweep. The radius is 1.4 × the
+     content width and has to reach √(W²+H²), which holds from W ≈ 49px at this
+     site's 44px height. Rather than trust any algebra, `_probe_btnfill.js`
+     measures the cover on every control at five widths and demands 5% headroom.
+   · `translate(50%,50%)` drops the disc's centre exactly onto the corner and
+     `scale()` grows it about that centre, so the fill starts as a point at the
+     corner. A transform stays on the compositor; the template animates
+     `top`/`left`, which re-runs layout on every frame.
+   · `z-index:-1` plus `isolation:isolate` on the control paints the disc above
+     the button's own background and below its in-flow text — spec paint order,
+     without borrowing the template's `z-index:1` (which would leak into the
+     header's stack).
+   The control's box, radius, border width and shadow never change and nothing
+   here translates the button itself (blueprint C4 / Part 4.7: the *control*
+   recolours; the ink and the paint inside it are ours to animate). */
+.btn::before, .apply-btn::before{
+  content:""; position:absolute; z-index:-1; pointer-events:none;
+  right:0; bottom:0; width:280%; aspect-ratio:1; border-radius:50%;
+  background:var(--fill);
+  transform:translate(50%,50%) scale(0);
+  transition:transform 200ms var(--ease);
 }
-/* both rows sit in the same cell, so the wrapper is exactly one label wide and
-   tall and swapping them can never change the button's size. `pre` keeps a
-   space token's advance (a whitespace-only box would otherwise collapse). */
-.t-roll-row{grid-area:roll; display:flex; white-space:pre}
-/* one glyph (Latin) or one shaped word (Bangla). The stagger rides on --i, the
-   token's index, capped in JS: duration stays inside the 150–200ms micro band. */
-.t-roll-u{display:block; transition:transform 190ms var(--ease) calc(var(--i,0) * 24ms)}
-/* the copy waits one line above the clip… */
-.t-roll-b .t-roll-u{transform:translateY(calc(-100% - .4em))}
-/* …and takes the outgoing copy's place on hover or keyboard focus. Disabled
-   buttons are excluded: a parked control must not invite the eye. */
-.btn:not([disabled]):hover .t-roll-a .t-roll-u,
-.btn:not([disabled]):focus-visible .t-roll-a .t-roll-u,
-.apply-btn:hover .t-roll-a .t-roll-u,
-.apply-btn:focus-visible .t-roll-a .t-roll-u{transform:translateY(calc(100% + .4em))}
-.btn:not([disabled]):hover .t-roll-b .t-roll-u,
-.btn:not([disabled]):focus-visible .t-roll-b .t-roll-u,
-.apply-btn:hover .t-roll-b .t-roll-u,
-.apply-btn:focus-visible .t-roll-b .t-roll-u{transform:translateY(0)}
+/* hover and keyboard focus fill it; a disabled control stays inert */
+.btn:not([disabled]):hover::before,
+.btn:not([disabled]):focus-visible::before,
+.apply-btn:hover::before,
+.apply-btn:focus-visible::before{transform:translate(50%,50%) scale(1)}
 
 /* ── Cards ────────────────────────────────────────────
    Hover law (blueprint Part 4.7 + the C1 state row): grid cards lift 5px, the
@@ -1240,11 +1246,9 @@ select{appearance:none; background-image:linear-gradient(45deg,transparent 50%,v
      animation that has no name) and the wordmark simply stays open. */
   .brand-name{animation:none; max-width:none; opacity:1}
   .brand-sub{animation:none; opacity:1; transform:none}
-  /* The label roll is decoration as well: no translation, no clone row, no clip
-     — the label is just the label. Stated here instead of leaning on the global
-     `.01ms` shim, which would swap two identical rows instantly (correct, but
-     only by accident of the copy being identical). */
-  .t-roll{overflow:visible; padding-block:0; margin-block:0}
-  .t-roll-b{display:none}
-  .t-roll-a .t-roll-u{transform:none}
+  /* The corner disc is decoration as well — but it must still APPEAR, because
+     the hover state must not vanish along with the motion. So the transition is
+     removed and the fill simply arrives. Stated here rather than leaning on the
+     global `.01ms` shim, which would do the same thing only by accident. */
+  .btn::before,.apply-btn::before{transition:none}
 }
