@@ -10,10 +10,32 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <meta name="theme-color" content="#090d12">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter+Tight:wght@500;600;700&family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/site.css?v=20261029n">
+<link rel="stylesheet" href="assets/css/site.css?v=20261029o">
+<script src="assets/js/loader.js?v=20261029a"></script>
 <script src="assets/js/prefs.js?v=20261029l"></script>
 </head>
 <body>
+<!-- ── boot loader — content loading on a slow link, invisible on a fast one ── -->
+<div class="site-loader" id="siteLoader" role="status" aria-live="polite" aria-hidden="true">
+  <div id="wifi-loader">
+    <svg class="circle-outer" viewBox="0 0 86 86">
+      <circle class="back" cx="43" cy="43" r="40"></circle>
+      <circle class="front" cx="43" cy="43" r="40"></circle>
+      <circle class="new" cx="43" cy="43" r="40"></circle>
+    </svg>
+    <svg class="circle-middle" viewBox="0 0 60 60">
+      <circle class="back" cx="30" cy="30" r="27"></circle>
+      <circle class="front" cx="30" cy="30" r="27"></circle>
+    </svg>
+    <svg class="circle-inner" viewBox="0 0 34 34">
+      <circle class="back" cx="17" cy="17" r="14"></circle>
+      <circle class="front" cx="17" cy="17" r="14"></circle>
+    </svg>
+    <div class="text" data-text="কনটেন্ট লোড হচ্ছে…"></div>
+  </div>
+</div>
+<noscript><style>.site-loader{display:none}</style></noscript>
+
 
 <a class="skip-link" href="#main">মূল অংশে যান · Skip to content</a>
 

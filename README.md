@@ -55,6 +55,23 @@ the button tightens to 32px.
 
 ---
 
+## Boot: content loading vs preloading
+
+`assets/js/loader.js` + the `#siteLoader` block at the top of every page decide what to
+spend on the visitor's connection (it reads `navigator.connection`):
+
+| Connection | What happens |
+|---|---|
+| **Slow** — `saveData`, or `effectiveType` `slow-2g` / `2g` / `3g` | The **wifi-loader** overlay (three animated rings, token-coloured — teal on the hairline grey) paints immediately with **“কনটেন্ট লোড হচ্ছে…”**, stays until the document has actually loaded, and comes back with **“পৃষ্ঠা লোড হচ্ছে…”** when a link is clicked. Nothing is prefetched — the bandwidth is the visitor's. |
+| **Fast** — anything else | The overlay **never paints**; instead the four other pages (`teachers`, `explore`, the two forms) and the four data files (`history`, `different`, `teachers`, `photos`) are added as `link[rel=prefetch]` once the browser is idle, so the next click is instant. |
+
+Safety rails: a 15 s cap always removes the overlay, a minimum 420 ms display stops it
+flashing, `aria-hidden` is toggled with it, `prefers-reduced-motion` freezes the rings, and
+with JavaScript off a `<noscript>` rule hides it entirely. State is exposed for tests and
+debugging as `<html data-conn="slow|fast" data-loading="on|off">` and `window.__siteLoader`.
+
+---
+
 ## Pages
 
 | File | Purpose |
@@ -356,12 +373,20 @@ a phone is the part that differs:
   below) and send that URL — the live site needs no server of its own and opens on every phone.
   The single file remains the best option for desktop and email.
 
-## Deploy (free, GitHub Pages)
+## Deploy (Firebase Hosting)
 
-1. Upload the whole `website/` folder to a GitHub repository (e.g. `jamiaislamia/website`).
-2. Repository → **Settings → Pages** → Source: *Deploy from a branch* → branch `main`, folder `/ (root)`.
-3. Your site goes live at `https://<user>.github.io/<repo>/`.
-   All asset paths are **relative**, so no configuration is needed.
+The public site and the three forms are served by **Firebase Hosting** — source stays in this
+(private) repository, the live files are staged and deployed:
+
+```powershell
+node _build_firebase_release.js
+firebase deploy --only hosting --project sms-admission-4f632
+```
+
+Live at `https://jamiaislamia.web.app/`. The full runbook (layout, cache policy, rollback,
+custom domain) is `DEPLOY.md`; the project-level summary is `../FIREBASE_HOSTING.md`.
+
+All asset paths are **relative**, so nothing needs configuring per environment.
 
 Nothing else to configure — the Firebase Realtime Database already allows the public
 `admissions` writes this site uses (`database.rules.json`).
