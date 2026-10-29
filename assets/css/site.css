@@ -463,49 +463,63 @@ code{font-family:var(--font-mono); font-size:.9em; background:var(--surface2); p
 .card:hover::before{width:100%}
 .card:hover::after{opacity:1}
 
-/* ── Streams — FOUR cards on the owner's PRICING-SHEET anatomy ────────
+/* ── Streams — FOUR cards in ONE ROW, on the owner's PRICING-SHEET anatomy
    The reference (2026-10-29) is a pricing sheet: a small accent line, the
    headline, ONE full-width action, then the features as a list — every row
    with a circular check. That order and that hierarchy are what is adopted.
    NOT adopted: the reference's pill radius (Part 4.4 — controls are 4px) and
    its per-card accent tint; all four cards keep the site's one accent on one
    surface, and the status tags carry the difference.
+
+   ONE ROW from 1024px up. The section measures 1032px, so a card is ~246px:
+   the four read as one sheet instead of two rows of slabs. 2-up from 761px,
+   1-up under it.
+
+   EVERY CARD TAKES ITS OWN HEIGHT. The lists run 3–7 rows; stretching all four
+   to the tallest only parks four empty rows of dead card under the Hifz
+   stream — the exact bulk this rebuild is removing. What DOES line up across
+   the row is the head, the name, the note, the action and the first check row,
+   and that is what makes four cards read as one sheet.
+
    The two LIVE streams hold the action; the two that open later hold the SAME
    control in the SAME slot, `disabled` — the row still lines up and nothing
    offers an action that does not exist. The signature 40px accent bar and the
    5px hover lift come from `.card` and are untouched. */
-.stream-grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); grid-auto-rows:1fr; gap:16px}
+.stream-grid{
+  display:grid; grid-template-columns:repeat(2,minmax(0,1fr));
+  align-items:start; gap:14px;
+}
 .stream-card{display:flex}
-.stream-card .card-pad{flex:1; display:flex; flex-direction:column; padding:22px}
+.stream-card .card-pad{flex:1; display:flex; flex-direction:column; padding:16px}
 /* the card's top line: the accent eyebrow, with the status tag at its right */
-.stream-head{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:15px}
+.stream-head{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px}
 .stream-eyebrow{
   min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-  font-family:var(--font-mono); font-size:9.5px; line-height:1.4;
+  font-family:var(--font-mono); font-size:9px; line-height:1.4;
   letter-spacing:.18em; text-transform:uppercase; color:var(--accent-d);
 }
 .stream-title{
-  font-family:var(--font-head); font-weight:600; font-size:23px; line-height:1.3;
-  color:var(--text); margin-bottom:8px;
+  font-family:var(--font-head); font-weight:600; font-size:19px; line-height:1.28;
+  color:var(--text); margin-bottom:5px;
 }
 .stream-title span{
-  display:block; margin-top:5px;
-  font-family:var(--font-mono); font-size:10px; font-weight:400;
+  display:block; margin-top:3px;
+  font-family:var(--font-mono); font-size:9px; font-weight:400;
   letter-spacing:.14em; text-transform:uppercase; color:var(--muted2);
 }
-/* the note holds two lines of air on all four cards, so the action and the
-   first check row land on the same y across a row — that alignment is what
-   makes the four cards read as one sheet (the reference does it by having
-   equal-length feature lists; the streams do not have those) */
-.stream-desc{font-size:13px; color:var(--muted); line-height:1.8; min-height:3.6em; margin-bottom:18px; max-width:46ch}
+/* the note reserves two lines here and three at 4-up (see the 1024 block), so
+   the action and the first check row land on one y across the row — the
+   reference gets that free from equal-length feature lists; the streams do not
+   have those */
+.stream-desc{font-size:12px; color:var(--muted); line-height:1.65; min-height:3.3em; margin-bottom:12px}
 /* the one action — full width of the card's own measure, never a pill */
-.stream-cta{width:100%; justify-content:center; text-align:center; flex:none; margin-bottom:20px}
+.stream-cta{width:100%; justify-content:center; text-align:center; flex:none; line-height:1.2; margin-bottom:12px; padding-left:10px; padding-right:10px}
 /* the subjects: rows with a check ring, not chips — the ring is the mark and
    the subject name is the label (the ring is `aria-hidden` in the markup) */
-.stream-list{list-style:none; display:flex; flex-direction:column; gap:11px}
+.stream-list{list-style:none; display:flex; flex-direction:column; gap:8px}
 .stream-list li{
-  display:flex; align-items:center; gap:10px;
-  font-family:var(--font-mono); font-size:12px; line-height:1.5; letter-spacing:.02em;
+  display:flex; align-items:center; gap:9px;
+  font-family:var(--font-mono); font-size:11.5px; line-height:1.45; letter-spacing:.02em;
   color:var(--body);
 }
 .stream-check{
@@ -520,6 +534,18 @@ code{font-family:var(--font-mono); font-size:.9em; background:var(--surface2); p
 .stream-card.is-soon .stream-title{color:var(--muted)}
 .stream-card.is-soon .stream-desc{color:var(--muted2)}
 .stream-card.is-soon .stream-check{border-color:var(--border2); background:var(--surface2); color:var(--muted2)}
+/* ── 4-up: the sheet proper, from 1024px ────────────────────────────── */
+@media (min-width:1024px){
+  .stream-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+  /* at a quarter of the measure the eyebrow and the tag cannot share a line
+     without the eyebrow losing its words to an ellipsis — so the head stacks,
+     on all four cards, and still lines up. The tag keeps its status inks but
+     loses its button-sized padding at this width. */
+  .stream-head{flex-direction:column; align-items:flex-start; gap:5px}
+  .stream-head .tag{font-size:9px; padding:3px 9px; letter-spacing:.12em}
+  .stream-title{font-size:18px}
+  .stream-desc{min-height:4.95em}   /* three lines at line-height 1.65 */
+}
 
 /* ── Culture — the SIX-STOP RAIL ──────────────────────────────────────
    The owner's reference is a vertical infographic: ONE connector line, the
@@ -1243,10 +1269,9 @@ select{appearance:none; background-image:linear-gradient(45deg,transparent 50%,v
   .eyebrow{white-space:normal}
   .sec-rule{min-width:100%}
   .grid-streams,.grid-values,.gallery,.photo-grid{grid-template-columns:repeat(2,1fr)}
-  /* one column: the cards take their OWN height again — `1fr` rows exist to
-     line two cards up side by side, and stacking them only opens a band of
-     empty card under every short list */
-  .stream-grid{grid-template-columns:1fr; grid-auto-rows:auto}
+  /* one column under 761 — below that the 2-up column is narrower than a
+     subject row, and the cards keep their own height at every width anyway */
+  .stream-grid{grid-template-columns:1fr}
   .why-grid{grid-template-columns:1fr; gap:0}
   .footer-nav{grid-template-columns:1fr 1fr; gap:16px 20px}
   /* the mosaic goes uniform at 2-up: six photos = three full rows */
